@@ -1,16 +1,28 @@
+import 'dotenv/config';
 import express from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import userRouter from './routes/user';
+import swaggerDocs from './swagger';
 
 const app = express();
 
+app.use(express.json());
+app.use(bodyParser.json());
+
+//WHY
 app.use(
   cors({
     credentials: true,
   })
 );
 
-app.listen(process.env.PORT, () => {
+app.use('/api/user', userRouter);
+
+const server = http.createServer(app);
+
+server.listen(process.env.PORT, () => {
   console.log('listening on port ' + process.env.PORT);
+  swaggerDocs(app);
 });
