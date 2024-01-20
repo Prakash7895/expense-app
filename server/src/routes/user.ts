@@ -34,7 +34,7 @@ const userRouter = express.Router();
  *      201:
  *        description: Created
  */
-userRouter.route('/register').post(() => {});
+userRouter.route('/register').post(userSignUp);
 
 /**
  * @openapi

@@ -19,8 +19,8 @@ model User {
   id              String        @id @default(uuid())
   firstName       String?
   lastName        String?
-  email           String?
-  phone           String?
+  email           String?       @unique
+  phone           String?       @unique
   password        String?
   invitedById     String?       @unique @default(uuid())
   landlordId      String?       @unique @default(uuid())

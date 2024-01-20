@@ -1,23 +1,20 @@
 import bcrypt from 'bcrypt';
 
-export const cryptPassword = (password: string, callback: Function) => {
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) {
-      return callback(err);
-    }
+export const cryptPassword = (password: string) => {
+  try {
+    const salt = bcrypt.genSaltSync(10);
 
-    bcrypt.hash(password, salt, (err, hash) => {
-      return callback(err, hash);
-    });
-  });
+    const hash = bcrypt.hashSync(password, salt);
+
+    return hash;
+  } catch (err) {
+    throw new Error('Could not generate crypt password');
+  }
 };
 
 export const comparePassword = (
   plainPassword: string,
-  hashPassword: string,
-  callback: Function
+  hashPassword: string
 ) => {
-  bcrypt.compare(plainPassword, hashPassword, (err, same) => {
-    return callback(err, same);
-  });
+  return bcrypt.compareSync(plainPassword, hashPassword);
 };
