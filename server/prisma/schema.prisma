@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  credit
+  debit
+}
+
+model User {
+  id              String        @id @default(uuid())
+  firstName       String?
+  lastName        String?
+  email           String?
+  phone           String?
+  password        String?
+  invitedById     String?       @unique @default(uuid())
+  landlordId      String?       @unique @default(uuid())
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
+  invitedBy       User?         @relation("invitation", fields: [invitedById], references: [id])
+  invitedUser     User?         @relation("invitation")
+  landlord        User?         @relation("landlord", fields: [landlordId], references: [id])
+  landlordUser    User?         @relation("landlord")
+  Account         Account[]
+  Category        Category[]
+  Transaction     Transaction[] @relation("userTransaction")
+  RentTransaction Transaction[] @relation("rentTransaction")
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String   @default(uuid())
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  amount      Float
+  type        TransactionType
+  balance     Float
+  categoryId  String          @default(uuid())
+  description String?
+  userId      String          @default(uuid())
+  renterId    String          @default(uuid())
+  createdAt   DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
+  user        User            @relation("userTransaction", fields: [userId], references: [id])
+  renter      User            @relation("rentTransaction", fields: [renterId], references: [id])
+  category    Category        @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id          String          @id @default(uuid())
+  name        String
+  type        TransactionType
+  userId      String          @default(uuid())
+  createdAt   DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
+  user        User            @relation(fields: [userId], references: [id])
+  Transaction Transaction[]
+}
