@@ -1,5 +1,15 @@
 import express from 'express';
-import { userSignUp } from '../controller/user';
+import { userLogin, userSignUp } from '../controller/user';
+import { body } from 'express-validator';
+import { PrismaClient } from '@prisma/client';
+import {
+  checkEitherEmailOrPhone,
+  checkPassword,
+  emptyAndRequiredCheckInBody,
+  requiredCheck,
+  routeMethodCheck,
+  validateResult,
+} from '../utils';
 
 const userRouter = express.Router();
 
@@ -17,14 +27,18 @@ const userRouter = express.Router();
  *           schema:
  *            type: object
  *            required:
- *              - username
- *              - email
+ *              - firstName
+ *              - lastName
+ *              - emailOrPhone
  *              - password
  *            properties:
- *              username:
+ *              firstName:
  *                type: string
- *                default: johndoe
- *              email:
+ *                default: John
+ *              lastName:
+ *                type: string
+ *                default: Doe
+ *              emailOrPhone:
  *                type: string
  *                default: johndoe@mail.com
  *              password:
@@ -34,7 +48,30 @@ const userRouter = express.Router();
  *      201:
  *        description: Created
  */
-userRouter.route('/register').post(userSignUp);
+userRouter.use(
+  '/register',
+  routeMethodCheck('POST'),
+  [
+    emptyAndRequiredCheckInBody('firstName', 'First Name'),
+    emptyAndRequiredCheckInBody('lastName', 'Last Name'),
+    requiredCheck('emailOrPhone', 'Email/Phone'),
+    checkEitherEmailOrPhone('emailOrPhone', 'Email/Phone'),
+    checkPassword('password', 'Password'),
+  ],
+  body('emailOrPhone').custom(async (val) => {
+    const existingUser = await new PrismaClient().user.findFirst({
+      where: {
+        OR: [{ email: val }, { phone: val }],
+      },
+    });
+    if (existingUser) {
+      throw new Error('E-mail/Phone already in use');
+    }
+    return true;
+  }),
+  validateResult,
+  userSignUp
+);
 
 /**
  * @openapi
@@ -50,56 +87,29 @@ userRouter.route('/register').post(userSignUp);
  *           schema:
  *            type: object
  *            required:
- *              - username
+ *              - emailOrPhone
  *              - password
  *            properties:
- *              username:
+ *              emailOrPhone:
  *                type: string
- *                default: johndoe
+ *                default: 8123543234
  *              password:
  *                type: string
  *                default: johnDoe20!@
  *     responses:
  *      201:
  *        description: Created
- *      409:
- *        description: Conflict
- *      404:
- *        description: Not Found
- *      500:
- *        description: Server Error
  */
-userRouter.route('/login').post(() => {}); // login in app
-
-/**
- * @openapi
- * '/api/user/verify':
- *  post:
- *     tags:
- *     - User Controller
- *     summary: Verify a user
- *     requestBody:
- *      required: true
- *      content:
- *        application/json:
- *           schema:
- *            type: object
- *            required:
- *              - username
- *            properties:
- *              username:
- *                type: string
- *                default: johndoe
- *     responses:
- *      201:
- *        description: Created
- *      409:
- *        description: Conflict
- *      404:
- *        description: Not Found
- *      500:
- *        desccription: Server Error
- */
-userRouter.route('/verify').post((req, res) => res.end());
+userRouter.use(
+  '/login',
+  routeMethodCheck('POST'),
+  [
+    requiredCheck('emailOrPhone', 'Email/Phone'),
+    checkEitherEmailOrPhone('emailOrPhone', 'Email/Phone'),
+    checkPassword('password', 'Password'),
+  ],
+  validateResult,
+  userLogin
+);
 
 export default userRouter;
