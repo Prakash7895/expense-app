@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { comparePassword, cryptPassword } from '../utils';
 import validator from 'validator';
 
@@ -60,9 +61,24 @@ export const userLogin = async (req: Request, res: Response) => {
     const hash = comparePassword(password, user?.password!);
 
     if (hash) {
+      const token = jwt.sign(
+        {
+          id: user.id,
+          email: user.email,
+          phone: user.phone,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        process.env.JWT_SECRET_KEY ?? '',
+        { expiresIn: 60 }
+      );
+
+      res.cookie('access-token', token);
+
       res.status(200).json({
         status: 'success',
         message: 'User logged in successfully.',
+        token,
       });
     } else {
       res.status(401).json({
