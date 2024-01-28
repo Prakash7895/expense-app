@@ -3,4 +3,6 @@ export interface FormFields {
   type: string;
   className?: string;
   label: string;
+  isDisabled?: boolean;
+  subType?: 'number';
 }

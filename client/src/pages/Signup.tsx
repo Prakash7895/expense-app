@@ -1,24 +1,26 @@
 import { CardBody, CardFooter, CardHeader, Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
-import { loginSchema } from '../utils/validations';
-import { loginFormFields } from '../utils/formFields';
+import { signupFormFields } from '../utils/formFields';
+import { signupSchema } from '../utils/validations';
 
-const Login = () => {
+const Signup = () => {
   return (
     <div className='h-screen -mb-6 flex justify-center items-center'>
       <DynamicForm
         formClassName='w-1/4'
-        fields={loginFormFields}
+        fields={signupFormFields}
         onSubmit={(t) => console.log('TT', t)}
-        validationSchema={loginSchema}
-        formHeader={<CardHeader className='justify-center'>Login</CardHeader>}
+        validationSchema={signupSchema}
+        formHeader={<CardHeader className='justify-center'>Sign up</CardHeader>}
         fieldsWrapperComponent={CardBody}
         buttonsWrapperComponent={CardFooter}
-        submitButtonLabel='Login'
+        submitButtonLabel='Sign up'
         otherFooterElements={
           <>
             <Link href='/forgot-password'>Forgot Password?</Link>
-            <Link href='/signup'>Sign Up</Link>
+            <p>
+              Already have an account? <Link href='/login'>Login</Link>
+            </p>
           </>
         }
         buttonWrapperClassName='justify-center items-center flex-col gap-3'
@@ -27,4 +29,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

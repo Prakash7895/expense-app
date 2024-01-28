@@ -1,8 +1,9 @@
-import { Button, Card, Input } from '@nextui-org/react';
+import { Button, Card, ButtonProps } from '@nextui-org/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormFields } from '../utils/types';
 import { FC, ReactNode } from 'react';
+import Input from './Input';
 
 interface DynamicFormProps {
   onSubmit: SubmitHandler<any>;
@@ -15,6 +16,8 @@ interface DynamicFormProps {
   buttonsWrapperComponent?: FC;
   buttonWrapperClassName?: string;
   otherFooterElements?: ReactNode;
+  submitButtonProps?: ButtonProps;
+  submitButtonLabel: string;
 }
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -28,13 +31,12 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   fieldsWrapperComponent,
   formHeader,
   formClassName,
+  submitButtonProps,
+  submitButtonLabel,
 }) => {
-  const { handleSubmit, register, formState } = useForm({
+  const { handleSubmit, control } = useForm({
     resolver: yupResolver(validationSchema),
   });
-
-  const { errors } = formState;
-  console.log(errors);
 
   const ButtonWrapper = buttonsWrapperComponent ?? 'div';
   const FieldWrapper = fieldsWrapperComponent ?? 'div';
@@ -48,24 +50,17 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
       {formHeader}
       <FieldWrapper className={fieldsWrapperClassName}>
         {fields.map((field) => (
-          <Input
-            size='sm'
-            variant='bordered'
-            key={field.name}
-            type={field.type}
-            label={field.label}
-            {...register(field.name)}
-            className={`${!!errors[field.name]?.message ? '' : 'pb-6'} ${
-              field.className ?? ''
-            }`}
-            isInvalid={!!errors[field.name]?.message}
-            errorMessage={errors[field.name]?.message as string}
-          />
+          <Input key={field.name} {...field} control={control} />
         ))}
       </FieldWrapper>
       <ButtonWrapper className={buttonWrapperClassName}>
-        <Button variant='flat' color='primary' type='submit'>
-          Login
+        <Button
+          variant='flat'
+          color='primary'
+          type='submit'
+          {...submitButtonProps}
+        >
+          {submitButtonLabel}
         </Button>
         {otherFooterElements}
       </ButtonWrapper>

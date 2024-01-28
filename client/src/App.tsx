@@ -2,10 +2,13 @@ import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Login from './pages/Login';
 import { NextUIProvider } from '@nextui-org/react';
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
 
 const router = createBrowserRouter([
-  { path: '/', element: <Login /> },
-  { path: '/forgot-password', element: <></> },
+  { path: '/signup', element: <Signup /> },
+  { path: '/login', element: <Login /> },
+  { path: '/forgot-password', element: <ForgotPassword /> },
 ]);
 
 function App() {
