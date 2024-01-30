@@ -35,7 +35,19 @@ export const forgotPassFormFields: FormFields[] = [
     label: 'Email/Phone',
     name: 'emailOrPhone',
     type: 'text',
-    className: 'my-3',
   },
-  { label: 'OTP', name: 'otp', type: 'text', subType: 'number' },
+  {
+    label: 'OTP',
+    name: 'otp',
+    type: 'text',
+    subType: 'number',
+    defaultValue: '',
+  },
+  { label: 'Password', name: 'password', type: 'password', defaultValue: '' },
+  {
+    label: 'Confirm Password',
+    name: 'confirmPassword',
+    type: 'password',
+    defaultValue: '',
+  },
 ];

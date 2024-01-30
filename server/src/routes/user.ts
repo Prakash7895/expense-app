@@ -1,11 +1,11 @@
 import express from 'express';
 import { userLogin, userSignUp } from '../controller/user';
 import { body } from 'express-validator';
-import { PrismaClient } from '@prisma/client';
 import {
   checkEitherEmailOrPhone,
   checkPassword,
   emptyAndRequiredCheckInBody,
+  prisma,
   requiredCheck,
   routeMethodCheck,
   validateResult,
@@ -59,7 +59,7 @@ userRouter.use(
     checkPassword('password', 'Password'),
   ],
   body('emailOrPhone').custom(async (val) => {
-    const existingUser = await new PrismaClient().user.findFirst({
+    const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ email: val }, { phone: val }],
       },

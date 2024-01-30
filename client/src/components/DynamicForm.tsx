@@ -31,11 +31,16 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   fieldsWrapperComponent,
   formHeader,
   formClassName,
-  submitButtonProps,
+  submitButtonProps = {},
   submitButtonLabel,
 }) => {
-  const { handleSubmit, control } = useForm({
+  const defaultValues = fields.reduce((acc, field) => {
+    return { ...acc, [field.name]: field.defaultValue ?? '' };
+  }, {});
+
+  const { handleSubmit, control } = useForm<typeof defaultValues>({
     resolver: yupResolver(validationSchema),
+    defaultValues: defaultValues,
   });
 
   const ButtonWrapper = buttonsWrapperComponent ?? 'div';

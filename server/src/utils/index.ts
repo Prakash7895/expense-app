@@ -2,6 +2,9 @@ import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import { PrismaClient } from '@prisma/client';
+
+export const prisma = new PrismaClient();
 
 export const cryptPassword = (password: string) => {
   try {

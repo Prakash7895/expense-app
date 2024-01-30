@@ -1,10 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { comparePassword, cryptPassword } from '../utils';
+import { comparePassword, cryptPassword, prisma } from '../utils';
 import validator from 'validator';
-
-const prisma = new PrismaClient();
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
@@ -73,7 +70,7 @@ export const userLogin = async (req: Request, res: Response) => {
         { expiresIn: 60 }
       );
 
-      res.cookie('access-token', token);
+      res.cookie('access-token', token, { maxAge: 900000, httpOnly: true });
 
       res.status(200).json({
         status: 'success',

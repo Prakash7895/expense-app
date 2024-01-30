@@ -21,6 +21,7 @@ const Input: FC<InputProps & FormFields> = ({
   isDisabled,
   subType,
   control,
+  defaultValue,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -32,7 +33,8 @@ const Input: FC<InputProps & FormFields> = ({
   } = useController({
     name,
     control,
-    defaultValue: '',
+    defaultValue: defaultValue ?? '',
+    shouldUnregister: true,
   });
 
   return (

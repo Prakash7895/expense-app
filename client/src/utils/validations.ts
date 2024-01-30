@@ -104,15 +104,36 @@ export const signupSchema = yup.object({
     ),
 });
 
-export const forgotPassSchema = (gotOtp: boolean) =>
+export const forgotPassSchema = (gotOtp: boolean, setPassword: boolean) =>
   yup.object({
     emailOrPhone: emailOrPhoneSchema,
-    otp: gotOtp
-      ? yup
-          .string()
-          .required('OTP is required.')
-          .matches(/^[0-9]+$/, 'Must be only digits.')
-          .min(5, 'Must be exactly 5 digits.')
-          .max(5, 'Must be exactly 5 digits.')
-      : yup.number().optional(),
+    ...(gotOtp
+      ? {
+          otp: yup
+            .string()
+            .required('OTP is required.')
+            .matches(/^[0-9]+$/, 'Must be only digits.')
+            .min(5, 'Must be exactly 5 digits.')
+            .max(5, 'Must be exactly 5 digits.'),
+        }
+      : {}),
+
+    ...(gotOtp && setPassword
+      ? {
+          password: passwordSchema,
+          confirmPassword: yup
+            .string()
+            .required('Confirm Password is required.')
+            .test(
+              'confirmPasswordCheck',
+              'Password and Confirm Password do not match.',
+              (val, context) => {
+                if (val && val !== context.parent.password) {
+                  return false;
+                }
+                return true;
+              }
+            ),
+        }
+      : {}),
   });

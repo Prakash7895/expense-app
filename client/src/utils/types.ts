@@ -5,4 +5,5 @@ export interface FormFields {
   label: string;
   isDisabled?: boolean;
   subType?: 'number';
+  defaultValue?: string;
 }
