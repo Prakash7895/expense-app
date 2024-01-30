@@ -2,24 +2,33 @@ import { CardBody, CardFooter, CardHeader, Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
 import { loginSchema } from '../utils/validations';
 import { loginFormFields } from '../utils/formFields';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const accessToken = Cookies.get('access-token');
+    if (accessToken) {
+      navigate('/');
+    }
+  }, []);
 
   const onSubmit = (t: any) => {
     setIsLoading(true);
     axiosInstance
       .post('/api/user/login', { ...t })
-      .then((res) => {
-        console.log('RES2:', res);
+      .then(() => {
         toast.success('Login successfull.');
         setIsLoading(false);
+        navigate('/');
       })
       .catch((err: any) => {
-        console.log('ERR', err);
         toast.error(
           <div>
             {err?.response?.data?.errors?.map((el: any) => (

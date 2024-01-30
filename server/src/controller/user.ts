@@ -58,6 +58,7 @@ export const userLogin = async (req: Request, res: Response) => {
     const hash = comparePassword(password, user?.password!);
 
     if (hash) {
+      const expiresIn = 60 * 60;
       const token = jwt.sign(
         {
           id: user.id,
@@ -67,10 +68,13 @@ export const userLogin = async (req: Request, res: Response) => {
           lastName: user.lastName,
         },
         process.env.JWT_SECRET_KEY ?? '',
-        { expiresIn: 60 }
+        { expiresIn: expiresIn }
       );
 
-      res.cookie('access-token', token, { maxAge: 900000, httpOnly: true });
+      res.cookie('access-token', token, {
+        maxAge: expiresIn * 1000,
+        httpOnly: false,
+      });
 
       res.status(200).json({
         status: 'success',
