@@ -1,9 +1,17 @@
-import { Button, Card, ButtonProps } from '@nextui-org/react';
+import {
+  Button,
+  ButtonProps,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from '@nextui-org/react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormFields } from '../utils/types';
 import { FC, ReactNode } from 'react';
-import Input from './Input';
+import FormElements from './FormElements';
 
 interface DynamicFormProps {
   onSubmit: SubmitHandler<any>;
@@ -16,8 +24,12 @@ interface DynamicFormProps {
   buttonsWrapperComponent?: FC;
   buttonWrapperClassName?: string;
   otherFooterElements?: ReactNode;
+  otherFormBodyElements?: ReactNode;
   submitButtonProps?: ButtonProps;
-  submitButtonLabel: string;
+  submitButtonLabel?: string;
+  isOpen: boolean;
+  onOpenChange?: (e: any) => void;
+  hideCloseButton?: boolean;
 }
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -33,6 +45,10 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   formClassName,
   submitButtonProps = {},
   submitButtonLabel,
+  otherFormBodyElements,
+  isOpen,
+  onOpenChange,
+  hideCloseButton,
 }) => {
   const defaultValues = fields.reduce((acc, field) => {
     return { ...acc, [field.name]: field.defaultValue ?? '' };
@@ -43,33 +59,44 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     defaultValues: defaultValues,
   });
 
-  const ButtonWrapper = buttonsWrapperComponent ?? 'div';
-  const FieldWrapper = fieldsWrapperComponent ?? 'div';
+  const ButtonWrapper = buttonsWrapperComponent ?? ModalFooter;
+  const FieldWrapper = fieldsWrapperComponent ?? ModalBody;
 
   return (
-    <Card
+    <Modal
+      backdrop='blur'
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      placement='top-center'
+      isDismissable={false}
+      hideCloseButton={hideCloseButton}
+      scrollBehavior='inside'
       as={'form'}
       onSubmit={handleSubmit(onSubmit)}
       className={formClassName}
     >
-      {formHeader}
-      <FieldWrapper className={fieldsWrapperClassName}>
-        {fields.map((field) => (
-          <Input key={field.name} {...field} control={control} />
-        ))}
-      </FieldWrapper>
-      <ButtonWrapper className={buttonWrapperClassName}>
-        <Button
-          variant='flat'
-          color='primary'
-          type='submit'
-          {...submitButtonProps}
-        >
-          {submitButtonLabel}
-        </Button>
-        {otherFooterElements}
-      </ButtonWrapper>
-    </Card>
+      <ModalContent>
+        {() => (
+          <>
+            <ModalHeader className='flex flex-col gap-1'>
+              {formHeader}
+            </ModalHeader>
+            <FieldWrapper className={fieldsWrapperClassName}>
+              {fields.map((field) => (
+                <FormElements key={field.name} {...field} control={control} />
+              ))}
+              {otherFormBodyElements}
+            </FieldWrapper>
+            <ButtonWrapper className={buttonWrapperClassName}>
+              <Button color='primary' type='submit' {...submitButtonProps}>
+                {submitButtonLabel}
+              </Button>
+              {otherFooterElements}
+            </ButtonWrapper>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
 

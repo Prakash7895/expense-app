@@ -9,6 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home';
 import PrivateRoutes from './components/PrivateRoutes';
+import { createContext, useState } from 'react';
 
 const router = createBrowserRouter([
   { path: '/signup', element: <Signup /> },
@@ -26,14 +27,40 @@ const router = createBrowserRouter([
 
 const queryClient = new QueryClient();
 
+interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+export const UserContext = createContext<{
+  user: User | null;
+  updateUser: (val: User) => void;
+}>({
+  user: null,
+  updateUser: (_: User) => {},
+});
+
 function App() {
+  const [user, setUser] = useState<User | null>(null);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <NextUIProvider>
-        <RouterProvider router={router} />;
-        <ToastContainer position='top-right' />
-      </NextUIProvider>
-    </QueryClientProvider>
+    <UserContext.Provider
+      value={{
+        user: user,
+        updateUser: (val: User) => {
+          setUser(val);
+        },
+      }}
+    >
+      <QueryClientProvider client={queryClient}>
+        <NextUIProvider>
+          <RouterProvider router={router} />;
+          <ToastContainer position='top-right' />
+        </NextUIProvider>
+      </QueryClientProvider>
+    </UserContext.Provider>
   );
 }
 

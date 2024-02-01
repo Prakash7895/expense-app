@@ -51,3 +51,19 @@ export const forgotPassFormFields: FormFields[] = [
     defaultValue: '',
   },
 ];
+
+export const addTransaction: FormFields[] = [
+  { label: 'Amount', name: 'amount', type: 'text', subType: 'number' },
+  {
+    label: 'Type',
+    name: 'type',
+    type: 'select',
+    options: [
+      { value: 'credit', label: 'Credit' },
+      { value: 'debit', label: 'Debit' },
+    ],
+  },
+  { label: 'Category', name: 'category', type: 'text' },
+  { label: 'Description', name: 'description', type: 'text' },
+  { label: 'Renter', name: 'renter', type: 'text' },
+];

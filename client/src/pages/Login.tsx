@@ -1,16 +1,19 @@
-import { CardBody, CardFooter, CardHeader, Link } from '@nextui-org/react';
+import { Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
 import { loginSchema } from '../utils/validations';
 import { loginFormFields } from '../utils/formFields';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { UserContext } from '../App';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { updateUser } = useContext(UserContext);
 
   useEffect(() => {
     const accessToken = Cookies.get('access-token');
@@ -23,7 +26,8 @@ const Login = () => {
     setIsLoading(true);
     axiosInstance
       .post('/api/user/login', { ...t })
-      .then(() => {
+      .then((res) => {
+        updateUser(res.data?.user);
         toast.success('Login successfull.');
         setIsLoading(false);
         navigate('/');
@@ -45,25 +49,25 @@ const Login = () => {
   return (
     <div className='h-screen -mb-6 flex justify-center items-center'>
       <DynamicForm
-        formClassName='lg:w-1/4 md:w-1/3 sm:w-1/2 w-full m-10'
-        fields={loginFormFields}
+        isOpen={true}
+        hideCloseButton
+        formHeader='Login'
         onSubmit={onSubmit}
+        fields={loginFormFields}
+        submitButtonLabel='Sign In'
         validationSchema={loginSchema}
-        formHeader={<CardHeader className='justify-center'>Login</CardHeader>}
-        fieldsWrapperComponent={CardBody}
-        buttonsWrapperComponent={CardFooter}
-        submitButtonLabel='Login'
+        fieldsWrapperClassName='gap-0'
         submitButtonProps={{
           isLoading,
           isDisabled: isLoading,
         }}
-        otherFooterElements={
-          <>
-            <Link href='/forgot-password'>Forgot Password?</Link>
+        otherFormBodyElements={
+          <div className='flex justify-between'>
             <Link href='/signup'>Sign Up</Link>
-          </>
+            <Link href='/forgot-password'>Forgot Password?</Link>
+          </div>
         }
-        buttonWrapperClassName='justify-center items-center flex-col gap-3'
+        buttonWrapperClassName='justify-start items-center flex-row-reverse gap-3'
       />
     </div>
   );
