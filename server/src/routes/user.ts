@@ -1,7 +1,6 @@
 import express from 'express';
 import { userLogin, userSignUp } from '../controller/user';
 import { body } from 'express-validator';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
   checkEitherEmailOrPhone,
   checkPassword,
@@ -93,10 +92,10 @@ userRouter.use(
  *            properties:
  *              emailOrPhone:
  *                type: string
- *                default: 8123543234
+ *                default: prakashchoudhary0141@gmail.com
  *              password:
  *                type: string
- *                default: johnDoe20!@
+ *                default: Demo@123
  *     responses:
  *      201:
  *        description: Created
@@ -112,21 +111,6 @@ userRouter.use(
   validateResult,
   userLogin
 );
-
-userRouter.use((req, res, next) => {
-  const accessToken = req.cookies['access-token'];
-  const verifiedUser = jwt.verify(
-    accessToken,
-    process.env.JWT_SECRET_KEY ?? ''
-  ) as JwtPayload;
-  req.user = {
-    email: verifiedUser.email,
-    phone: verifiedUser.phone,
-    firstName: verifiedUser.firstName,
-    lastName: verifiedUser.lastName,
-  };
-  next();
-});
 
 userRouter.use('/profile', routeMethodCheck('GET'), (req, res) => {
   res.json({ success: true, data: req.user });

@@ -4,8 +4,11 @@ import http from 'http';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import userRouter from './routes/user';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import swaggerDocs from './swagger';
+import userRouter from './routes/user';
+import transactionRouter from './routes/transaction';
+import categoryRouter from './routes/category';
 
 const app = express();
 
@@ -21,7 +24,27 @@ app.use(
   })
 );
 
+app.use((req, _, next) => {
+  const accessToken = req.cookies['access-token'];
+  if (accessToken) {
+    const verifiedUser = jwt.verify(
+      accessToken,
+      process.env.JWT_SECRET_KEY ?? ''
+    ) as JwtPayload;
+    req.user = {
+      id: verifiedUser.id,
+      email: verifiedUser.email,
+      phone: verifiedUser.phone,
+      firstName: verifiedUser.firstName,
+      lastName: verifiedUser.lastName,
+    };
+  }
+  next();
+});
+
 app.use('/api/user', userRouter);
+app.use('/api/transaction', transactionRouter);
+app.use('/api/category', categoryRouter);
 
 const server = http.createServer(app);
 

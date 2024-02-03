@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import validator from 'validator';
 import { Request, Response } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body, query, validationResult } from 'express-validator';
 import { PrismaClient } from '@prisma/client';
 
 export const prisma = new PrismaClient();
@@ -30,11 +30,21 @@ export const routeMethodCheck =
     if (req.method !== method) {
       return res.status(404).json({
         status: 'error',
-        message: 'Not Found',
+        message: 'Not Found.',
       });
     }
     next();
   };
+
+export const authCheck = () => (req: Request, res: Response, next: any) => {
+  if (!req.user) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'Unauthorized',
+    });
+  }
+  next();
+};
 
 export const validateResult = (req: Request, res: Response, next: any) => {
   const result = validationResult(req);
@@ -83,3 +93,49 @@ export const checkPassword = (field: string, label?: string) =>
     .withMessage(
       `${label} must be at least 8 characters including special character, lowercase, uppercase and numbers`
     );
+
+export const createQueryValidation = (sortByColumnArr?: string[]) => [
+  (req: Request, res: Response, next: any) => {
+    req.query.sortOrder = req.query.sortOrder ?? '';
+    req.query.sortBy = req.query.sortBy ?? '';
+    next();
+  },
+  query('pageNo')
+    .trim()
+    .notEmpty()
+    .withMessage('Page no is required.')
+    .customSanitizer((val) => Number(val))
+    .isInt({ min: 1 })
+    .withMessage('Page number must be integer and greater than 1.'),
+  query('pageSize')
+    .custom((val, { req }) => {
+      val;
+      return true;
+    })
+    .trim()
+    .notEmpty()
+    .withMessage('Page size is required.')
+    .customSanitizer((val) => Number(val))
+    .isInt({ min: 1, max: 100 })
+    .withMessage('Page size must be integer and greater than 1.'),
+
+  query('sortOrder')
+    .default('desc')
+    .optional()
+    .trim()
+    .isIn(['asc', 'desc'])
+    .withMessage('Sort order can only be "asc" or "desc".'),
+
+  query('sortBy')
+    .default('createdAt')
+    .optional()
+    .trim()
+    .isIn(['createdAt', ...(sortByColumnArr ?? [])])
+    .withMessage(
+      `Sort order can be one of the following: "createdAt"${
+        sortByColumnArr?.length ? ', "' : ''
+      }${sortByColumnArr?.length ? sortByColumnArr.join('", "') : ''}${
+        sortByColumnArr?.length ? '"' : ''
+      }.`
+    ),
+];

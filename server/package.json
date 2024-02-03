@@ -9,7 +9,11 @@
     "prisma:init": "npx prisma migrate dev --name init",
     "prisma:generate": "npx prisma generate",
     "prisma:update": "npx prisma migrate dev",
+    "prisma:seed": "npx prisma db seed",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "prisma": {
+    "seed": "ts-node src/seed.ts"
   },
   "author": "Prakash",
   "license": "ISC",
@@ -32,7 +36,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@prisma/client": "^5.8.1",
+    "@prisma/client": "^5.9.1",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",

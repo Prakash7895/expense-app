@@ -53,11 +53,11 @@ model Transaction {
   categoryId  String          @default(uuid())
   description String?
   userId      String          @default(uuid())
-  renterId    String          @default(uuid())
+  renterId    String?         @default(uuid())
   createdAt   DateTime        @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
   user        User            @relation("userTransaction", fields: [userId], references: [id])
-  renter      User            @relation("rentTransaction", fields: [renterId], references: [id])
+  renter      User?           @relation("rentTransaction", fields: [renterId], references: [id])
   category    Category        @relation(fields: [categoryId], references: [id])
 }
 
@@ -65,9 +65,9 @@ model Category {
   id          String          @id @default(uuid())
   name        String
   type        TransactionType
-  userId      String          @default(uuid())
+  userId      String?         @default(uuid())
   createdAt   DateTime        @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
-  user        User            @relation(fields: [userId], references: [id])
+  User        User?           @relation(fields: [userId], references: [id])
   Transaction Transaction[]
 }
