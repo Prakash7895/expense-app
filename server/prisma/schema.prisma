@@ -37,12 +37,14 @@ model User {
 }
 
 model Account {
-  id        String   @id @default(uuid())
-  name      String
-  userId    String   @default(uuid())
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
-  user      User     @relation(fields: [userId], references: [id])
+  id          String        @id @default(uuid())
+  name        String
+  description String
+  userId      String        @default(uuid())
+  createdAt   DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime      @updatedAt @db.Timestamptz(3)
+  user        User          @relation(fields: [userId], references: [id])
+  Transaction Transaction[]
 }
 
 model Transaction {
@@ -54,10 +56,12 @@ model Transaction {
   description String?
   userId      String          @default(uuid())
   renterId    String?         @default(uuid())
+  accountId   String?         @default(uuid())
   createdAt   DateTime        @default(now()) @db.Timestamptz(3)
   updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
   user        User            @relation("userTransaction", fields: [userId], references: [id])
   renter      User?           @relation("rentTransaction", fields: [renterId], references: [id])
+  account     Account?        @relation(fields: [accountId], references: [id])
   category    Category        @relation(fields: [categoryId], references: [id])
 }
 

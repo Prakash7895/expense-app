@@ -9,6 +9,7 @@ import swaggerDocs from './swagger';
 import userRouter from './routes/user';
 import transactionRouter from './routes/transaction';
 import categoryRouter from './routes/category';
+import accountRouter from './routes/account';
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use((req, _, next) => {
 app.use('/api/user', userRouter);
 app.use('/api/transaction', transactionRouter);
 app.use('/api/category', categoryRouter);
+app.use('/api/account', accountRouter);
 
 const server = http.createServer(app);
 

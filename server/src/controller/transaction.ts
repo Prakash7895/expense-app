@@ -3,21 +3,24 @@ import { prisma } from '../utils';
 
 export const addTransaction = async (req: Request, res: Response) => {
   try {
-    const { amount, type, categoryId, description, renterId } = req.body;
+    const { amount, type, categoryId, description, renterId, accountId } =
+      req.body;
 
     const sumCredit = await prisma.transaction.aggregate({
       _sum: { amount: true },
       where: {
-        userId: req.user.id,
         type: 'credit',
+        userId: req.user.id,
+        accountId: accountId ?? null,
       },
     });
 
     const sumDebit = await prisma.transaction.aggregate({
       _sum: { amount: true },
       where: {
-        userId: req.user.id,
         type: 'debit',
+        userId: req.user.id,
+        accountId: accountId ?? null,
       },
     });
 
@@ -33,6 +36,7 @@ export const addTransaction = async (req: Request, res: Response) => {
         userId: req.user.id,
         balance: balance,
         renterId: renterId ?? null,
+        accountId: accountId ?? null,
       },
     });
 
@@ -56,7 +60,7 @@ export const listTransactions = async (req: Request, res: Response) => {
     const skip = (Number(pageNo) - 1) * Number(pageSize);
 
     const whereQuery = {
-      // userId: req.user.id,
+      userId: req.user.id,
     };
 
     const transactions = await prisma.transaction.findMany({
@@ -91,21 +95,24 @@ export const listTransactions = async (req: Request, res: Response) => {
 
 export const updateTransaction = async (req: Request, res: Response) => {
   try {
-    const { amount, type, categoryId, description, renterId } = req.body;
+    const { amount, type, categoryId, description, renterId, accountId } =
+      req.body;
 
     const sumCredit = await prisma.transaction.aggregate({
       _sum: { amount: true },
       where: {
-        userId: req.user.id,
         type: 'credit',
+        userId: req.user.id,
+        accountId: accountId ?? null,
       },
     });
 
     const sumDebit = await prisma.transaction.aggregate({
       _sum: { amount: true },
       where: {
-        userId: req.user.id,
         type: 'debit',
+        userId: req.user.id,
+        accountId: accountId ?? null,
       },
     });
 

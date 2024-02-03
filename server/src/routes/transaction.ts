@@ -35,6 +35,7 @@ const transactionRouter = express.Router();
  *              - categoryId
  *              - description
  *              - renterId
+ *              - accountId
  *            properties:
  *              amount:
  *                type: number
@@ -49,6 +50,9 @@ const transactionRouter = express.Router();
  *                type: string
  *                default: This is description
  *              renterId:
+ *                type: uuid
+ *                default: d34e7fd7-dcfa-4925-ad47-e3f04b3d35c8
+ *              accountId:
  *                type: uuid
  *                default: d34e7fd7-dcfa-4925-ad47-e3f04b3d35c8
  *     responses:
@@ -85,6 +89,17 @@ transactionRouter.post(
         throw new Error('Category does not exist.');
       }
 
+      return true;
+    }),
+    body('accountId').custom(async (val, { req }) => {
+      const accountExists = await prisma.account.findFirst({
+        where: {
+          id: val,
+        },
+      });
+      if (accountExists && accountExists.userId !== req.user.id) {
+        throw new Error('Not a valid account id.');
+      }
       return true;
     }),
     body('renterId').trim().optional(),

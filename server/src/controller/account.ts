@@ -1,21 +1,21 @@
 import { Request, Response } from 'express';
 import { prisma } from '../utils';
 
-export const addCategory = async (req: Request, res: Response) => {
+export const addAccount = async (req: Request, res: Response) => {
   try {
-    const { name, type } = req.body;
+    const { name, description } = req.body;
 
-    const created = await prisma.category.create({
+    const created = await prisma.account.create({
       data: {
         name: name,
-        type: type,
         userId: req.user.id,
+        description: description,
       },
     });
 
     res.status(201).json({
       success: true,
-      message: 'Category added successfully.',
+      message: 'Account added successfully.',
       data: created,
     });
   } catch (err: any) {
@@ -26,25 +26,25 @@ export const addCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCategory = async (req: Request, res: Response) => {
+export const updateAccount = async (req: Request, res: Response) => {
   try {
-    const { name, type } = req.body;
+    const { name, description } = req.body;
 
-    const categoryId = req.params.categoryId;
+    const accountId = req.params.accountId;
 
-    const updated = await prisma.category.update({
+    const updated = await prisma.account.update({
       where: {
-        id: categoryId,
+        id: accountId,
       },
       data: {
         name: name,
-        type: type,
+        description: description,
       },
     });
 
     return res.status(204).json({
       success: true,
-      message: 'Category updated successfully.',
+      message: 'Account updated successfully.',
       data: updated,
     });
   } catch (err: any) {
@@ -55,17 +55,17 @@ export const updateCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const listCategory = async (req: Request, res: Response) => {
+export const listAccount = async (req: Request, res: Response) => {
   try {
     const { pageNo, pageSize, sortBy, sortOrder } = req.query;
 
     const skip = (Number(pageNo) - 1) * Number(pageSize);
 
     const whereQuery = {
-      userId: { in: [null, req.user.id] },
+      userId: req.user.id,
     };
 
-    const transactions = await prisma.category.findMany({
+    const accounts = await prisma.account.findMany({
       where: {
         ...whereQuery,
       },
@@ -76,7 +76,7 @@ export const listCategory = async (req: Request, res: Response) => {
       },
     });
 
-    const total = await prisma.category.count({
+    const total = await prisma.account.count({
       where: {
         ...whereQuery,
       },
@@ -84,7 +84,7 @@ export const listCategory = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      data: transactions,
+      data: accounts,
       total: total,
     });
   } catch (err: any) {
@@ -95,19 +95,19 @@ export const listCategory = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteCategory = async (req: Request, res: Response) => {
+export const deleteAccount = async (req: Request, res: Response) => {
   try {
-    const categoryId = req.params.categoryId;
+    const accountId = req.params.accountId;
 
-    const updated = await prisma.category.delete({
+    const updated = await prisma.account.delete({
       where: {
-        id: categoryId,
+        id: accountId,
       },
     });
 
     return res.status(204).json({
       success: true,
-      message: 'Category deleted successfully.',
+      message: 'Account deleted successfully.',
       data: updated,
     });
   } catch (err: any) {
