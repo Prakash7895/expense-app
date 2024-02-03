@@ -67,6 +67,15 @@ export const listTransactions = async (req: Request, res: Response) => {
       where: {
         ...whereQuery,
       },
+      include: {
+        category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+        renter: true,
+      },
       take: Number(pageSize),
       skip,
       orderBy: {

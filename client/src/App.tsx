@@ -10,6 +10,28 @@ import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home';
 import PrivateRoutes from './components/PrivateRoutes';
 import { createContext, useState } from 'react';
+import Transaction from './pages/Transaction';
+import Category from './pages/Category';
+import Account from './pages/Account';
+
+export const sidebar = [
+  { path: '/', label: 'Home', element: <Home /> },
+  {
+    path: '/transaction',
+    label: 'Transaction',
+    element: <Transaction />,
+  },
+  {
+    path: '/account',
+    label: 'Account',
+    element: <Account />,
+  },
+  {
+    path: '/category',
+    label: 'Category',
+    element: <Category />,
+  },
+];
 
 const router = createBrowserRouter([
   { path: '/signup', element: <Signup /> },
@@ -18,10 +40,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <PrivateRoutes />,
-    children: [
-      { path: '/', element: <Home /> },
-      { path: '/hello', element: <div>Hello</div> },
-    ],
+    children: [...sidebar],
   },
 ]);
 
@@ -55,8 +74,8 @@ function App() {
       }}
     >
       <QueryClientProvider client={queryClient}>
-        <NextUIProvider>
-          <RouterProvider router={router} />;
+        <NextUIProvider className='h-screen flex flex-col'>
+          <RouterProvider router={router} />
           <ToastContainer position='top-right' />
         </NextUIProvider>
       </QueryClientProvider>

@@ -36,7 +36,7 @@ const Navbar = () => {
   }, [userQuery.data]);
 
   return (
-    <NextNavBar isBordered>
+    <NextNavBar isBordered className='shadow-md'>
       <NavbarBrand>
         <Skeleton isLoaded={!!user} className='w-3/5 rounded-lg'>
           <p className='font-bold text-inherit'>

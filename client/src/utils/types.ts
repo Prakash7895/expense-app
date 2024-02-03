@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 export interface FormFields {
   name: string;
   type: 'text' | 'select' | 'password';
@@ -7,4 +9,11 @@ export interface FormFields {
   subType?: 'number';
   defaultValue?: string;
   options?: { value: string; label: string }[];
+}
+
+export interface Column {
+  name: string;
+  uid: string;
+  isSortable?: boolean;
+  cellRender?: (item: any) => ReactNode;
 }
