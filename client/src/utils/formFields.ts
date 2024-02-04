@@ -1,4 +1,4 @@
-import { FormFields } from './types';
+import { Category, FormFields } from './types';
 
 export const loginFormFields: FormFields[] = [
   {
@@ -52,18 +52,35 @@ export const forgotPassFormFields: FormFields[] = [
   },
 ];
 
-export const addTransaction: FormFields[] = [
-  { label: 'Amount', name: 'amount', type: 'text', subType: 'number' },
-  {
-    label: 'Type',
-    name: 'type',
-    type: 'select',
-    options: [
-      { value: 'credit', label: 'Credit' },
-      { value: 'debit', label: 'Debit' },
-    ],
-  },
-  { label: 'Category', name: 'category', type: 'text' },
-  { label: 'Description', name: 'description', type: 'text' },
-  { label: 'Renter', name: 'renter', type: 'text' },
-];
+export const addTransaction = (categoryList: Category[]) =>
+  [
+    { label: 'Amount', name: 'amount', type: 'text', subType: 'number' },
+    {
+      label: 'Type',
+      name: 'type',
+      type: 'select',
+      options: [
+        { value: 'credit', label: 'Credit' },
+        { value: 'debit', label: 'Debit' },
+      ],
+      onFieldChange(event, resetField) {
+        console.log('evet', event);
+        if (resetField) {
+          resetField('categoryId');
+        }
+      },
+    },
+    {
+      label: 'Category',
+      name: 'categoryId',
+      type: 'select',
+      options: ({ type }) =>
+        type
+          ? categoryList
+              .filter((el) => el.type === type)
+              .map((el) => ({ label: el.name, value: el.id }))
+          : [],
+    },
+    { label: 'Description', name: 'description', type: 'text' },
+    { label: 'Renter', name: 'renter', type: 'text' },
+  ] as FormFields[];

@@ -27,9 +27,9 @@ interface DynamicFormProps {
   otherFormBodyElements?: ReactNode;
   submitButtonProps?: ButtonProps;
   submitButtonLabel?: string;
-  isOpen: boolean;
   onOpenChange?: (e: any) => void;
   hideCloseButton?: boolean;
+  initialValues?: { [key: string]: any };
 }
 
 const DynamicForm: React.FC<DynamicFormProps> = ({
@@ -46,17 +46,23 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   submitButtonProps = {},
   submitButtonLabel,
   otherFormBodyElements,
-  isOpen,
   onOpenChange,
   hideCloseButton,
+  initialValues,
 }) => {
   const defaultValues = fields.reduce((acc, field) => {
-    return { ...acc, [field.name]: field.defaultValue ?? '' };
+    return {
+      ...acc,
+      [field.name]: initialValues?.[field.name] ?? field.defaultValue ?? '',
+    };
   }, {});
 
-  const { handleSubmit, control } = useForm<typeof defaultValues>({
+  const { handleSubmit, control, watch, setValue, resetField } = useForm<
+    typeof defaultValues
+  >({
     resolver: yupResolver(validationSchema),
     defaultValues: defaultValues,
+    shouldUnregister: true,
   });
 
   const ButtonWrapper = buttonsWrapperComponent ?? ModalFooter;
@@ -65,7 +71,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   return (
     <Modal
       backdrop='blur'
-      isOpen={isOpen}
+      isOpen={true}
       onOpenChange={onOpenChange}
       placement='top-center'
       isDismissable={false}
@@ -83,7 +89,14 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             </ModalHeader>
             <FieldWrapper className={fieldsWrapperClassName}>
               {fields.map((field) => (
-                <FormElements key={field.name} {...field} control={control} />
+                <FormElements
+                  key={field.name}
+                  {...field}
+                  control={control}
+                  watch={watch}
+                  setValue={setValue}
+                  resetField={resetField}
+                />
               ))}
               {otherFormBodyElements}
             </FieldWrapper>

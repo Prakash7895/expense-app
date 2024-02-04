@@ -57,7 +57,7 @@ export const updateCategory = async (req: Request, res: Response) => {
 
 export const listCategory = async (req: Request, res: Response) => {
   try {
-    const { pageNo, pageSize, sortBy, sortOrder } = req.query;
+    const { pageNo, pageSize, sortBy, sortOrder, getAll } = req.query;
 
     const skip = (Number(pageNo) - 1) * Number(pageSize);
 
@@ -69,8 +69,7 @@ export const listCategory = async (req: Request, res: Response) => {
       where: {
         ...whereQuery,
       },
-      take: Number(pageSize),
-      skip,
+      ...(getAll ? {} : { take: Number(pageSize), skip }),
       orderBy: {
         [sortBy as string]: sortOrder,
       },
@@ -88,7 +87,7 @@ export const listCategory = async (req: Request, res: Response) => {
       total: total,
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });

@@ -301,7 +301,7 @@ transactionRouter.delete(
       .notEmpty()
       .withMessage('transactionId is required.')
       .custom(async (val, { req }) => {
-        const transactionExists = await prisma.category.findFirst({
+        const transactionExists = await prisma.transaction.findFirst({
           where: {
             id: val,
             userId: req.user.id,

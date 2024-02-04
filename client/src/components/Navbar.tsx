@@ -9,18 +9,21 @@ import {
   Navbar as NextNavBar,
   Skeleton,
 } from '@nextui-org/react';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import { UserContext } from '../App';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../utils/axiosInstance';
+import { User, useAppDispatch, useAppSelector } from '../utils/types';
+import { getUser, setUser } from '../utils/store/userSlice';
+import { setCategory } from '../utils/store/categorySlice';
 
 const Navbar = () => {
-  const { user, updateUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(getUser);
 
-  const userQuery = useQuery({
+  const userQuery = useQuery<User>({
     queryKey: ['loggedInUser'],
     queryFn: async () => {
       return axiosInstance
@@ -29,11 +32,30 @@ const Navbar = () => {
     },
   });
 
+  const categoryQuery = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      return axiosInstance
+        .get('/api/category/list?pageNo=1&pageSize=10&getAll=true')
+        .then((res) => res.data.data);
+    },
+  });
+
   useEffect(() => {
-    if (!userQuery.isPending && userQuery.isFetched) {
-      updateUser(userQuery.data);
+    if (userQuery.data && !userQuery.isPending && userQuery.isFetched) {
+      dispatch(setUser(userQuery.data));
     }
   }, [userQuery.data]);
+
+  useEffect(() => {
+    if (
+      categoryQuery.data &&
+      !categoryQuery.isPending &&
+      categoryQuery.isFetched
+    ) {
+      dispatch(setCategory(categoryQuery.data));
+    }
+  }, [categoryQuery.data]);
 
   return (
     <NextNavBar isBordered className='shadow-md'>

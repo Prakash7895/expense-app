@@ -1,18 +1,19 @@
-import './index.css';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import Login from './pages/Login';
-import { NextUIProvider } from '@nextui-org/react';
-import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Home from './pages/Home';
+import './index.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { NextUIProvider } from '@nextui-org/react';
+import { ToastContainer } from 'react-toastify';
+import { Provider } from 'react-redux';
 import PrivateRoutes from './components/PrivateRoutes';
-import { createContext, useState } from 'react';
+import ForgotPassword from './pages/ForgotPassword';
 import Transaction from './pages/Transaction';
 import Category from './pages/Category';
 import Account from './pages/Account';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
+import store from './utils/store';
+import Home from './pages/Home';
 
 export const sidebar = [
   { path: '/', label: 'Home', element: <Home /> },
@@ -46,40 +47,16 @@ const router = createBrowserRouter([
 
 const queryClient = new QueryClient();
 
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
-
-export const UserContext = createContext<{
-  user: User | null;
-  updateUser: (val: User) => void;
-}>({
-  user: null,
-  updateUser: (_: User) => {},
-});
-
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-
   return (
-    <UserContext.Provider
-      value={{
-        user: user,
-        updateUser: (val: User) => {
-          setUser(val);
-        },
-      }}
-    >
+    <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <NextUIProvider className='h-screen flex flex-col'>
           <RouterProvider router={router} />
           <ToastContainer position='top-right' />
         </NextUIProvider>
       </QueryClientProvider>
-    </UserContext.Provider>
+    </Provider>
   );
 }
 

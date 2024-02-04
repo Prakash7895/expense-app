@@ -107,6 +107,8 @@ export const updateTransaction = async (req: Request, res: Response) => {
     const { amount, type, categoryId, description, renterId, accountId } =
       req.body;
 
+    const transactionId = req.params.transactionId;
+
     const sumCredit = await prisma.transaction.aggregate({
       _sum: { amount: true },
       where: {
@@ -128,25 +130,29 @@ export const updateTransaction = async (req: Request, res: Response) => {
     const total = (sumCredit._sum.amount ?? 0) - (sumDebit._sum.amount ?? 0);
     const balance = total + (type === 'debit' ? -amount : +amount);
 
-    const created = await prisma.transaction.create({
+    const created = await prisma.transaction.update({
+      where: {
+        id: transactionId,
+      },
       data: {
         amount: amount,
         type: type,
         description: description ?? null,
-        categoryId: categoryId,
         userId: req.user.id,
+        categoryId: categoryId,
         balance: balance,
         renterId: renterId ?? null,
+        accountId: accountId ?? null,
       },
     });
 
-    res.status(204).json({
+    res.status(201).json({
       success: true,
       message: 'Transaction updated successfully.',
       data: created,
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -163,7 +169,7 @@ export const deleteTransaction = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(204).json({
+    res.status(200).json({
       success: true,
       message: 'Transaction deleted successfully.',
       data: updated,

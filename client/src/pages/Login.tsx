@@ -2,18 +2,19 @@ import { Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
 import { loginSchema } from '../utils/validations';
 import { loginFormFields } from '../utils/formFields';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { UserContext } from '../App';
+import { useAppDispatch } from '../utils/types';
+import { setUser } from '../utils/store/userSlice';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { updateUser } = useContext(UserContext);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const accessToken = Cookies.get('access-token');
@@ -27,7 +28,7 @@ const Login = () => {
     axiosInstance
       .post('/api/user/login', { ...t })
       .then((res) => {
-        updateUser(res.data?.user);
+        dispatch(setUser(res.data?.user));
         toast.success('Login successfull.');
         setIsLoading(false);
         navigate('/');
@@ -49,7 +50,6 @@ const Login = () => {
   return (
     <div className='h-screen -mb-6 flex justify-center items-center'>
       <DynamicForm
-        isOpen={true}
         hideCloseButton
         formHeader='Login'
         onSubmit={onSubmit}

@@ -141,5 +141,5 @@ export const forgotPassSchema = (gotOtp: boolean, setPassword: boolean) =>
 export const addTransactionSchema = yup.object({
   amount: yup.string().required('Amount is required.'),
   type: yup.string().required('Type is required.'),
-  category: yup.string().required('Category is required.'),
+  categoryId: yup.string().required('Category is required.'),
 });

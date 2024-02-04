@@ -1,7 +1,13 @@
 import { FC } from 'react';
 import Input from './Input';
 import { FormFields } from '../utils/types';
-import { Control, useController } from 'react-hook-form';
+import {
+  Control,
+  UseFormResetField,
+  UseFormSetValue,
+  UseFormWatch,
+  useController,
+} from 'react-hook-form';
 import { Select, SelectItem } from '@nextui-org/react';
 
 interface FormElementsProps {
@@ -11,6 +17,9 @@ interface FormElementsProps {
     },
     any
   >;
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+  resetField: UseFormResetField<any>;
 }
 
 const FormElements: FC<FormElementsProps & FormFields> = ({
@@ -23,6 +32,10 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
   isDisabled,
   options,
   subType,
+  watch,
+  setValue,
+  resetField,
+  onFieldChange,
 }) => {
   const {
     field,
@@ -30,11 +43,8 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
   } = useController({
     name,
     control,
-    defaultValue: defaultValue ?? '',
     shouldUnregister: true,
   });
-
-  console.log('ERROR', errors);
 
   switch (type) {
     case 'select':
@@ -48,13 +58,22 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
           }`}
           isInvalid={!!errors[name]?.message}
           errorMessage={errors[name]?.message as string}
+          defaultSelectedKeys={field.value ? [field.value] : []}
           {...field}
+          onChange={(e) => {
+            if (onFieldChange) {
+              onFieldChange(e, resetField, setValue);
+            }
+            field.onChange(e);
+          }}
         >
-          {options!.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
+          {(typeof options === 'function' ? options(watch()) : options)!.map(
+            (option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            )
+          )}
         </Select>
       );
 

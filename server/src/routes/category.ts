@@ -6,7 +6,7 @@ import {
   requiredCheck,
   validateResult,
 } from '../utils';
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 import {
   addCategory,
   deleteCategory,
@@ -86,6 +86,11 @@ categoryRouter.post(
  *          Sort order:
  *           * `asc` - Ascending, from A to Z
  *           * `desc` - Descending, from Z to A
+ *      - name: getAll
+ *        in: query
+ *        schema:
+ *          type: boolean
+ *        description: send *true* to get all categories
  *     responses:
  *      201:
  *        description: Created
@@ -94,6 +99,7 @@ categoryRouter.get(
   '/list',
   authCheck(),
   createQueryValidation(['name']),
+  query('getAll').trim().optional().toBoolean().isBoolean(),
   validateResult,
   listCategory
 );
