@@ -10,6 +10,7 @@ import { body, param } from 'express-validator';
 import {
   addTransaction,
   deleteTransaction,
+  getBalanceInfo,
   listTransactions,
   updateTransaction,
 } from '../controller/transaction';
@@ -316,5 +317,18 @@ transactionRouter.delete(
   validateResult,
   deleteTransaction
 );
+
+/**
+ * @openapi
+ * '/api/transaction/balance-info':
+ *  get:
+ *     tags:
+ *     - Transaction Controller
+ *     summary: Balance info for all transactions
+ *     responses:
+ *      201:
+ *        description: Created
+ */
+transactionRouter.get('/balance-info', authCheck(), getBalanceInfo);
 
 export default transactionRouter;

@@ -62,7 +62,7 @@ export const listCategory = async (req: Request, res: Response) => {
     const skip = (Number(pageNo) - 1) * Number(pageSize);
 
     const whereQuery = {
-      userId: { in: [null, req.user.id] },
+      OR: [{ userId: null }, { userId: req.user.id }],
     };
 
     const transactions = await prisma.category.findMany({

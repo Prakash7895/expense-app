@@ -181,3 +181,60 @@ export const deleteTransaction = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getBalanceInfo = async (req: Request, res: Response) => {
+  try {
+    const sumCredit = await prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: {
+        type: 'credit',
+        userId: req.user.id,
+      },
+    });
+
+    const sumDebit = await prisma.transaction.aggregate({
+      _sum: { amount: true },
+      where: {
+        type: 'debit',
+        userId: req.user.id,
+      },
+    });
+
+    const sumByCategoryCredit = await prisma.transaction.groupBy({
+      by: ['categoryId'],
+      _sum: {
+        amount: true,
+      },
+      where: {
+        type: 'credit',
+        userId: req.user.id,
+      },
+    });
+
+    const sumByCategoryDebit = await prisma.transaction.groupBy({
+      by: ['categoryId'],
+      _sum: {
+        amount: true,
+      },
+      where: {
+        type: 'debit',
+        userId: req.user.id,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalCredit: sumCredit,
+        totalDebit: sumDebit,
+        sumByCategoryCredit,
+        sumByCategoryDebit,
+      },
+    });
+  } catch (err: any) {
+    res.status(300).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
