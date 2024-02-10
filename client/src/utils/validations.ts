@@ -148,3 +148,7 @@ export const addCategorySchema = yup.object({
   name: yup.string().required('Name is required.'),
   type: yup.string().required('Type is required.'),
 });
+
+export const addAccountSchema = yup.object({
+  name: yup.string().required('Name is required.'),
+});

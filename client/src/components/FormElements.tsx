@@ -8,7 +8,8 @@ import {
   UseFormWatch,
   useController,
 } from 'react-hook-form';
-import { Select, SelectItem } from '@nextui-org/react';
+import { SelectItem, Textarea } from '@nextui-org/react';
+import Select from './Select';
 
 interface FormElementsProps {
   control: Control<
@@ -75,6 +76,21 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
             )
           )}
         </Select>
+      );
+
+    case 'textarea':
+      return (
+        <Textarea
+          label={label}
+          className={`${!!errors[name]?.message ? '' : 'pb-6'} ${
+            className ?? ''
+          }`}
+          isInvalid={!!errors[name]?.message}
+          errorMessage={errors[name]?.message as string}
+          {...field}
+          size='sm'
+          variant='bordered'
+        />
       );
 
     default:

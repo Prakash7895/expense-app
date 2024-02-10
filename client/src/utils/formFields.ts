@@ -101,3 +101,16 @@ export const categoryFormFields: FormFields[] = [
     ],
   },
 ];
+
+export const accountFormFields: FormFields[] = [
+  {
+    label: 'Name',
+    name: 'name',
+    type: 'text',
+  },
+  {
+    label: 'Description',
+    name: 'description',
+    type: 'textarea',
+  },
+];

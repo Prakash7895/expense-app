@@ -10,9 +10,12 @@ export interface User {
   phone: string;
 }
 
+export type Mode = 'dark' | 'light';
+export type ColorScheme = Mode | 'system';
+
 export interface FormFields {
   name: string;
-  type: 'text' | 'select' | 'password';
+  type: 'text' | 'select' | 'password' | 'textarea';
   className?: string;
   label: string;
   isDisabled?: boolean;

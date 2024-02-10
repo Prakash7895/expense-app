@@ -12,3 +12,9 @@ export const categoryColumns: Column[] = [
   { name: 'Type', uid: 'type', isSortable: true },
   { name: 'Action', uid: 'actions' },
 ];
+
+export const accountColumns: Column[] = [
+  { name: 'Name', uid: 'name', isSortable: true },
+  { name: 'Description', uid: 'description' },
+  { name: 'Action', uid: 'actions' },
+];

@@ -1,6 +1,6 @@
 import {
   Avatar,
-  Dropdown,
+  Button,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
@@ -14,14 +14,30 @@ import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../utils/axiosInstance';
-import { User, useAppDispatch, useAppSelector } from '../utils/types';
-import { getUser, setUser } from '../utils/store/userSlice';
+import {
+  ColorScheme,
+  User,
+  useAppDispatch,
+  useAppSelector,
+} from '../utils/types';
+import {
+  getColorSheme,
+  getMode,
+  getUser,
+  setColorScheme,
+  setMode,
+  setUser,
+} from '../utils/store/userSlice';
 import { setCategory } from '../utils/store/categorySlice';
+import { IoMoon, IoSettings, IoSunny } from 'react-icons/io5';
+import Dropdown from './Dropdown';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector(getUser);
+  const mode = useAppSelector(getMode);
+  const colorScheme = useAppSelector(getColorSheme);
 
   const userQuery = useQuery<User>({
     queryKey: ['loggedInUser'],
@@ -57,8 +73,32 @@ const Navbar = () => {
     }
   }, [categoryQuery.data]);
 
+  useEffect(() => {
+    const theme = window.matchMedia('(prefers-color-scheme: dark)');
+
+    if (colorScheme === 'system') {
+      dispatch(setMode(theme.matches ? 'dark' : 'light'));
+    } else {
+      dispatch(setMode(colorScheme));
+    }
+    const handleThemeChange = (event: MediaQueryListEvent) => {
+      if (colorScheme === 'system') {
+        dispatch(setMode(event.matches ? 'dark' : 'light'));
+      }
+    };
+
+    theme.addEventListener('change', handleThemeChange);
+
+    return () => {
+      theme.removeEventListener('change', handleThemeChange);
+    };
+  }, [colorScheme]);
+
   return (
-    <NextNavBar isBordered className='shadow-md'>
+    <NextNavBar
+      isBordered
+      className={`shadow-md ${mode} text-foreground-800 bg-content1`}
+    >
       <NavbarBrand>
         <Skeleton isLoaded={!!user} className='w-3/5 rounded-lg'>
           <p className='font-bold text-inherit'>
@@ -86,6 +126,48 @@ const Navbar = () => {
       </NavbarContent> */}
 
       <NavbarContent as='div' justify='end'>
+        <Dropdown>
+          <DropdownTrigger>
+            <Button variant='bordered' isIconOnly>
+              {colorScheme === 'dark' ? (
+                <IoMoon />
+              ) : colorScheme === 'light' ? (
+                <IoSunny />
+              ) : (
+                <IoSettings />
+              )}
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            selectedKeys={new Set([colorScheme])}
+            selectionMode='single'
+            aria-label='theme setting'
+            onSelectionChange={(val) => {
+              if (val !== 'all') {
+                val.forEach((v) => {
+                  dispatch(setColorScheme(v as ColorScheme));
+                  localStorage.setItem('colorScheme', v as string);
+                });
+              }
+            }}
+          >
+            <DropdownItem key='dark'>
+              <span className='flex items-center gap-3'>
+                <IoMoon /> Dark
+              </span>
+            </DropdownItem>
+            <DropdownItem key='light' className='flex items-center gap-3'>
+              <span className='flex items-center gap-3'>
+                <IoSunny /> Light
+              </span>
+            </DropdownItem>
+            <DropdownItem key='system' className='flex items-center gap-3'>
+              <span className='flex items-center gap-3'>
+                <IoSettings /> System
+              </span>
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
         <Dropdown placement='bottom-end'>
           <Skeleton
             isLoaded={!!user}
@@ -95,7 +177,7 @@ const Navbar = () => {
               <Avatar
                 isBordered
                 as='button'
-                className='transition-transform prakash'
+                className='transition-transform'
                 color='secondary'
                 name='Jason Hughes'
                 size='sm'

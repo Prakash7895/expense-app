@@ -4,9 +4,11 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Modal as NextModal,
 } from '@nextui-org/react';
 import { FC, ReactNode } from 'react';
+import { getMode } from '../utils/store/userSlice';
+import { useAppSelector } from '../utils/types';
+import NextUIModal from './NextUIModal';
 
 interface ModalProps {
   isOpen: boolean;
@@ -25,8 +27,15 @@ const Modal: FC<ModalProps> = ({
   confirmBtnAction,
   confirmBtnLabel,
 }) => {
+  const mode = useAppSelector(getMode);
+
   return (
-    <NextModal backdrop='blur' isOpen={isOpen} onClose={handleClose}>
+    <NextUIModal
+      backdrop='blur'
+      isOpen={isOpen}
+      onClose={handleClose}
+      className={`${mode} text-foreground bg-background`}
+    >
       <ModalContent>
         {(onClose) => (
           <>
@@ -43,7 +52,7 @@ const Modal: FC<ModalProps> = ({
           </>
         )}
       </ModalContent>
-    </NextModal>
+    </NextUIModal>
   );
 };
 

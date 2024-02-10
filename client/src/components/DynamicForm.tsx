@@ -1,7 +1,6 @@
 import {
   Button,
   ButtonProps,
-  Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
@@ -12,6 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FormFields } from '../utils/types';
 import { FC, ReactNode } from 'react';
 import FormElements from './FormElements';
+import NextUIModal from './NextUIModal';
 
 interface DynamicFormProps {
   onSubmit: SubmitHandler<any>;
@@ -69,7 +69,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   const FieldWrapper = fieldsWrapperComponent ?? ModalBody;
 
   return (
-    <Modal
+    <NextUIModal
       backdrop='blur'
       isOpen={true}
       onOpenChange={onOpenChange}
@@ -109,7 +109,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
           </>
         )}
       </ModalContent>
-    </Modal>
+    </NextUIModal>
   );
 };
 

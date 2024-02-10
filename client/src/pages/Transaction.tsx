@@ -66,7 +66,7 @@ const Transaction = () => {
       }}
       beforeTableComponent={
         <div className='my-5 flex gap-4 items-center'>
-          <Card className='py-4'>
+          <Card className='py-4 text-foreground-600 bg-content1'>
             <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
               <p className='text-tiny uppercase font-bold'>Total Earnings</p>
             </CardHeader>
@@ -76,7 +76,7 @@ const Transaction = () => {
               </h4>
             </CardBody>
           </Card>
-          <Card className='py-4'>
+          <Card className='py-4 text-foreground-600 bg-content1'>
             <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
               <p className='text-tiny uppercase font-bold'>Total Expenses</p>
             </CardHeader>

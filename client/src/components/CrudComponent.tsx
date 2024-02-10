@@ -59,12 +59,12 @@ const CrudComponent: FC<CrudComponentProps> = ({
 
   const onSubmit = (t: any) => {
     const transactionData = Object.keys(t).reduce((acc, key) => {
-      if (t[key]) {
-        acc = {
-          ...acc,
-          [key]: t[key],
-        };
-      }
+      // if (t[key]) {
+      acc = {
+        ...acc,
+        [key]: t[key],
+      };
+      // }
       return acc;
     }, {});
 

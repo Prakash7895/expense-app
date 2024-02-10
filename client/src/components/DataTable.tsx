@@ -1,10 +1,10 @@
 import {
   Button,
-  Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
   Pagination,
+  SelectItem,
   SortDescriptor,
   Spinner,
   Table,
@@ -28,6 +28,8 @@ import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../utils/axiosInstance';
 import { IoEllipsisVertical } from 'react-icons/io5';
 import { toast } from 'react-toastify';
+import Dropdown from './Dropdown';
+import Select from './Select';
 
 interface DataTableProps {
   columns: Column[];
@@ -42,8 +44,6 @@ interface DataTableProps {
   onRowAction?: (key: Key, item: any) => void;
   dropdownDisabledeys?: string[] | ((val: any) => string[]);
 }
-
-const rowsPerPage = 5;
 
 const DataTable: FC<DataTableProps> = ({
   api,
@@ -62,19 +62,19 @@ const DataTable: FC<DataTableProps> = ({
     column: 'createdAt',
     direction: 'descending',
   });
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const { data, isLoading, isPending, refetch, isError, error } = useQuery<{
     success: boolean;
     data: any[];
     total: number;
   }>({
-    queryKey: [...queryKey, page, sortDescriptor],
+    queryKey: [...queryKey, page, sortDescriptor, rowsPerPage],
     queryFn: async ({ queryKey }) => {
-      console.log('Query', queryKey[2]);
       const sort: SortDescriptor = queryKey[2]!;
       return axiosInstance
         .get(
-          `${api}?pageNo=${queryKey[1]}&pageSize=${rowsPerPage}&sortBy=${
+          `${api}?pageNo=${queryKey[1]}&pageSize=${queryKey[3]}&sortBy=${
             sort.column
           }&sortOrder=${sort?.direction === 'ascending' ? 'asc' : 'desc'}`
         )
@@ -219,14 +219,58 @@ const DataTable: FC<DataTableProps> = ({
     );
   }, [data?.total, page, totalPages]);
 
+  const onRowsPerPageChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number(e.target.value));
+      setPage(1);
+    },
+    []
+  );
+
+  const topContent = useMemo(() => {
+    return (
+      <div className='flex justify-between items-center'>
+        <span className='text-default-400 text-small'>
+          Total {data?.total} rows.
+        </span>
+        <Select
+          size='sm'
+          value={rowsPerPage}
+          className='max-w-60'
+          label='Rows per page:'
+          defaultSelectedKeys={['5']}
+          labelPlacement='outside-left'
+          onChange={onRowsPerPageChange}
+          classNames={{
+            label: 'w-[80%] text-default-400 text-small my-auto pr-0',
+          }}
+        >
+          <SelectItem key={'5'} value='5'>
+            5
+          </SelectItem>
+          <SelectItem key={'10'} value='10'>
+            10
+          </SelectItem>
+          <SelectItem key={'25'} value='25'>
+            25
+          </SelectItem>
+          <SelectItem key={'50'} value='50'>
+            50
+          </SelectItem>
+        </Select>
+      </div>
+    );
+  }, [rowsPerPage, data?.total]);
+
   return (
     <Table
       aria-label='Example table with custom cells, pagination and sorting'
-      isHeaderSticky
+      // isHeaderSticky
       bottomContent={bottomContent}
+      topContent={topContent}
       bottomContentPlacement='outside'
       classNames={{
-        wrapper: 'max-h-[382px]',
+        wrapper: 'max-h-[400px]',
       }}
       shadow='md'
       className='mt-5'
