@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Pagination,
+  SortDescriptor,
   Spinner,
   Table,
   TableBody,
@@ -26,6 +27,7 @@ import { Column, DropdownMenuItem } from '../utils/types';
 import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../utils/axiosInstance';
 import { IoEllipsisVertical } from 'react-icons/io5';
+import { toast } from 'react-toastify';
 
 interface DataTableProps {
   columns: Column[];
@@ -38,6 +40,7 @@ interface DataTableProps {
   tableRowClassName?: string | ((val: any) => string);
   actionItems?: DropdownMenuItem[];
   onRowAction?: (key: Key, item: any) => void;
+  dropdownDisabledeys?: string[] | ((val: any) => string[]);
 }
 
 const rowsPerPage = 5;
@@ -51,19 +54,30 @@ const DataTable: FC<DataTableProps> = ({
   columnRenderers,
   tableRowClassName,
   onRowAction,
+  dropdownDisabledeys,
 }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+    column: 'createdAt',
+    direction: 'descending',
+  });
 
-  const { data, isLoading, isPending, refetch } = useQuery<{
+  const { data, isLoading, isPending, refetch, isError, error } = useQuery<{
     success: boolean;
     data: any[];
     total: number;
   }>({
-    queryKey: [...queryKey, page],
+    queryKey: [...queryKey, page, sortDescriptor],
     queryFn: async ({ queryKey }) => {
+      console.log('Query', queryKey[2]);
+      const sort: SortDescriptor = queryKey[2]!;
       return axiosInstance
-        .get(`${api}?pageNo=${queryKey[1]}&pageSize=${rowsPerPage}`)
+        .get(
+          `${api}?pageNo=${queryKey[1]}&pageSize=${rowsPerPage}&sortBy=${
+            sort.column
+          }&sortOrder=${sort?.direction === 'ascending' ? 'asc' : 'desc'}`
+        )
         .then((res) => res.data);
     },
     refetchOnWindowFocus: false,
@@ -74,6 +88,20 @@ const DataTable: FC<DataTableProps> = ({
       refetch();
     }
   }, [refetchNum]);
+
+  useEffect(() => {
+    if (isError && error) {
+      toast.error(
+        <div>
+          {(error as any)?.response?.data?.errors?.map((el: any) => (
+            <p key={el.msg}>{el.msg}</p>
+          )) ??
+            (error as any)?.response?.data?.message ??
+            (error as any)?.message}
+        </div>
+      );
+    }
+  }, [isError, error]);
 
   // console.log('DATA', data);
   // console.log('isLoading', isLoading);
@@ -112,6 +140,11 @@ const DataTable: FC<DataTableProps> = ({
               aria-label='Static Actions'
               items={actionItems}
               onAction={(key) => onRowAction && onRowAction(key, item)}
+              disabledKeys={
+                typeof dropdownDisabledeys === 'function'
+                  ? dropdownDisabledeys(item)
+                  : dropdownDisabledeys
+              }
             >
               {(item) => (
                 <DropdownItem
@@ -197,6 +230,10 @@ const DataTable: FC<DataTableProps> = ({
       }}
       shadow='md'
       className='mt-5'
+      sortDescriptor={sortDescriptor}
+      onSortChange={(descriptor) => {
+        setSortDescriptor(descriptor);
+      }}
     >
       <TableHeader columns={columns}>
         {(column) => (

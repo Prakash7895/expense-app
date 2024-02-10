@@ -42,7 +42,7 @@ export const updateCategory = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(204).json({
+    return res.status(201).json({
       success: true,
       message: 'Category updated successfully.',
       data: updated,
@@ -98,13 +98,22 @@ export const deleteCategory = async (req: Request, res: Response) => {
   try {
     const categoryId = req.params.categoryId;
 
-    const updated = await prisma.category.delete({
-      where: {
-        id: categoryId,
-      },
-    });
+    const updated = await prisma.category
+      .delete({
+        where: {
+          id: categoryId,
+        },
+      })
+      .catch((err) => {
+        if (err?.code === 'P2003') {
+          throw new Error(
+            'Category cannot be deleted as it has some related transaction(s).'
+          );
+        }
+        throw new Error(err?.message);
+      });
 
-    return res.status(204).json({
+    return res.status(201).json({
       success: true,
       message: 'Category deleted successfully.',
       data: updated,

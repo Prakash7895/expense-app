@@ -42,7 +42,7 @@ export const updateAccount = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(204).json({
+    return res.status(201).json({
       success: true,
       message: 'Account updated successfully.',
       data: updated,
@@ -105,7 +105,7 @@ export const deleteAccount = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(204).json({
+    return res.status(201).json({
       success: true,
       message: 'Account deleted successfully.',
       data: updated,

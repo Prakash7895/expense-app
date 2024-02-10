@@ -23,10 +23,12 @@ interface CrudComponentProps {
   api: string;
   queryKey: string[];
   tableRowClassName?: string | ((val: any) => string);
-  deleteApi: string;
+  crudApi: string;
   onSubmitSuccess?: (data?: any) => void;
   onDeleteSuccess?: (data?: any) => void;
   beforeTableComponent?: ReactNode;
+  disableEdit?: boolean | ((val: any) => boolean);
+  disableDelete?: boolean | ((val: any) => boolean);
 }
 
 const CrudComponent: FC<CrudComponentProps> = ({
@@ -40,12 +42,14 @@ const CrudComponent: FC<CrudComponentProps> = ({
   submitButtonLabel = 'Add',
   columnRenderers,
   api,
-  deleteApi,
+  crudApi,
   queryKey,
   tableRowClassName,
   onSubmitSuccess,
   onDeleteSuccess,
   beforeTableComponent,
+  disableDelete,
+  disableEdit,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [refetchNum, setRefetchNum] = useState(0);
@@ -67,11 +71,8 @@ const CrudComponent: FC<CrudComponentProps> = ({
     setIsSubmitting(true);
 
     (selectedItem
-      ? axiosInstance.put(
-          `/api/transaction/${selectedItem.id}`,
-          transactionData
-        )
-      : axiosInstance.post('/api/transaction', transactionData)
+      ? axiosInstance.put(`${crudApi}${selectedItem.id}`, transactionData)
+      : axiosInstance.post(`${crudApi}`, transactionData)
     )
       .then((response) => {
         console.log(response.data);
@@ -83,14 +84,20 @@ const CrudComponent: FC<CrudComponentProps> = ({
         onSubmitSuccess && onSubmitSuccess();
       })
       .catch((error) => {
-        toast.error(error?.message);
+        toast.error(
+          <div>
+            {error?.response?.data?.errors?.map((el: any) => (
+              <p key={el.msg}>{el.msg}</p>
+            )) ?? error?.message}
+          </div>
+        );
       });
   };
 
   const handleDelete = () => {
     if (selectedItem) {
       axiosInstance
-        .delete(`${deleteApi}${selectedItem.id}`)
+        .delete(`${crudApi}${selectedItem.id}`)
         .then((res) => {
           toast.success(res.data?.message);
           setSelectedItem(null);
@@ -99,7 +106,15 @@ const CrudComponent: FC<CrudComponentProps> = ({
           onDeleteSuccess && onDeleteSuccess();
         })
         .catch((err) => {
-          toast.error(err?.message);
+          toast.error(
+            <div>
+              {err?.response?.data?.errors?.map((el: any) => (
+                <p key={el.msg}>{el.msg}</p>
+              )) ??
+                err?.response?.data?.message ??
+                err?.message}
+            </div>
+          );
         });
     }
   };
@@ -180,6 +195,20 @@ const CrudComponent: FC<CrudComponentProps> = ({
           },
         ]}
         onRowAction={onRowAction}
+        dropdownDisabledeys={(item) => [
+          ...((
+            typeof disableEdit === 'function' ? disableEdit(item) : disableEdit
+          )
+            ? ['edit']
+            : []),
+          ...((
+            typeof disableDelete === 'function'
+              ? disableDelete(item)
+              : disableDelete
+          )
+            ? ['delete']
+            : []),
+        ]}
       />
       <Modal
         isOpen={isModalOpen}

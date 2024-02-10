@@ -98,7 +98,7 @@ categoryRouter.post(
 categoryRouter.get(
   '/list',
   authCheck(),
-  createQueryValidation(['name']),
+  createQueryValidation(['name', 'type']),
   query('getAll').trim().optional().toBoolean().isBoolean(),
   validateResult,
   listCategory

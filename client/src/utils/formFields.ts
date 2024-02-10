@@ -84,3 +84,20 @@ export const addTransaction = (categoryList: Category[]) =>
     { label: 'Description', name: 'description', type: 'text' },
     { label: 'Renter', name: 'renter', type: 'text' },
   ] as FormFields[];
+
+export const categoryFormFields: FormFields[] = [
+  {
+    label: 'Name',
+    name: 'name',
+    type: 'text',
+  },
+  {
+    label: 'Type',
+    name: 'type',
+    type: 'select',
+    options: [
+      { value: 'credit', label: 'Credit' },
+      { value: 'debit', label: 'Debit' },
+    ],
+  },
+];

@@ -8,6 +8,7 @@ export const transactionColumns: Column[] = [
 ];
 
 export const categoryColumns: Column[] = [
-  { name: 'Name', uid: 'name' },
-  { name: 'Type', uid: 'type' },
+  { name: 'Name', uid: 'name', isSortable: true },
+  { name: 'Type', uid: 'type', isSortable: true },
+  { name: 'Action', uid: 'actions' },
 ];

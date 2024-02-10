@@ -33,7 +33,7 @@ const Transaction = () => {
       headerBtnLabel='Add Transaction'
       api='/api/transaction/list'
       queryKey={['transaction']}
-      deleteApi='/api/transaction/'
+      crudApi='/api/transaction/'
       formHeader='Add Transaction'
       tableColumns={transactionColumns}
       columnRenderers={{
