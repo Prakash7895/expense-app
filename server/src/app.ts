@@ -43,6 +43,12 @@ app.use((req, _, next) => {
   next();
 });
 
+app.get('/healthz', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Success',
+  });
+});
 app.use('/api/user', userRouter);
 app.use('/api/transaction', transactionRouter);
 app.use('/api/category', categoryRouter);
@@ -50,7 +56,7 @@ app.use('/api/account', accountRouter);
 
 const server = http.createServer(app);
 
-server.listen(process.env.PORT, async () => {
+server.listen(+`${process.env.PORT}`, '0.0.0.0', 3000, async () => {
   console.log('listening on port:' + process.env.PORT);
   swaggerDocs(app);
 });

@@ -14,7 +14,9 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import { IoClose } from 'react-icons/io5';
-import { getSettings } from './utils/store/settingSlice';
+import { getSettings, setMode } from './utils/store/settingSlice';
+import { useEffect } from 'react';
+import { useAppDispatch } from './utils/types';
 
 export const sidebar = [
   { path: '/', label: 'Home', element: <Home /> },
@@ -49,7 +51,30 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient();
 
 function App() {
-  const { mode } = useSelector(getSettings);
+  const { mode, colorScheme } = useSelector(getSettings);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const theme = window.matchMedia('(prefers-color-scheme: dark)');
+
+    if (colorScheme === 'system') {
+      dispatch(setMode(theme.matches ? 'dark' : 'light'));
+    } else {
+      dispatch(setMode(colorScheme));
+    }
+    const handleThemeChange = (event: MediaQueryListEvent) => {
+      if (colorScheme === 'system') {
+        dispatch(setMode(event.matches ? 'dark' : 'light'));
+      }
+    };
+
+    theme.addEventListener('change', handleThemeChange);
+
+    return () => {
+      theme.removeEventListener('change', handleThemeChange);
+    };
+  }, [colorScheme]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <NextUIProvider

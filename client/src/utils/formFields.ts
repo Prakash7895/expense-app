@@ -63,8 +63,7 @@ export const addTransaction = (categoryList: Category[]) =>
         { value: 'credit', label: 'Credit' },
         { value: 'debit', label: 'Debit' },
       ],
-      onFieldChange(event, resetField) {
-        console.log('evet', event);
+      onFieldChange(_, resetField) {
         if (resetField) {
           resetField('categoryId');
         }

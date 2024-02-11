@@ -51,7 +51,9 @@ const Transaction = () => {
         },
       }}
       tableRowClassName={(item) =>
-        `border-b-medium ${item.type === 'debit' ? 'bg-danger-50' : 'bg-success-50'}`
+        `border-b-medium ${
+          item.type === 'debit' ? 'bg-danger-50' : 'bg-success-50'
+        }`
       }
       formFields={addTransaction(categories ?? [])}
       formValidationSchema={addTransactionSchema}
@@ -63,7 +65,7 @@ const Transaction = () => {
       }}
       beforeTableComponent={
         <div className='my-5 flex gap-4 items-center'>
-          <Card className='py-4 text-foreground-600'>
+          <Card className='py-4 text-foreground-600 w-36'>
             <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
               <p className='text-tiny uppercase font-bold'>Total Earnings</p>
             </CardHeader>
@@ -73,13 +75,27 @@ const Transaction = () => {
               </h4>
             </CardBody>
           </Card>
-          <Card className='py-4 text-foreground-600'>
+          <h4 className='font-bold text-large'>-</h4>
+          <Card className='py-4 text-foreground-600 w-36'>
             <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
               <p className='text-tiny uppercase font-bold'>Total Expenses</p>
             </CardHeader>
             <CardBody className='overflow-visible py-2'>
               <h4 className='font-bold text-large text-danger'>
                 ${data?.data.totalDebit._sum.amount}
+              </h4>
+            </CardBody>
+          </Card>
+          <h4 className='font-bold text-large'>=</h4>
+          <Card className='py-4 text-foreground-600 w-36'>
+            <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
+              <p className='text-tiny uppercase font-bold'>Balance</p>
+            </CardHeader>
+            <CardBody className='overflow-visible py-2'>
+              <h4 className='font-bold text-large'>
+                $
+                {data?.data.totalCredit._sum.amount -
+                  data?.data.totalDebit._sum.amount}
               </h4>
             </CardBody>
           </Card>

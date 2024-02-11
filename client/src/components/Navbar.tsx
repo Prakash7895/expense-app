@@ -27,7 +27,6 @@ import DropdownMenu from './DropdownMenu';
 import {
   getSettings,
   setColorScheme,
-  setMode,
   setShowSidebar,
 } from '../utils/store/settingSlice';
 
@@ -70,27 +69,6 @@ const Navbar = () => {
       dispatch(setCategory(categoryQuery.data));
     }
   }, [categoryQuery.data]);
-
-  useEffect(() => {
-    const theme = window.matchMedia('(prefers-color-scheme: dark)');
-
-    if (colorScheme === 'system') {
-      dispatch(setMode(theme.matches ? 'dark' : 'light'));
-    } else {
-      dispatch(setMode(colorScheme));
-    }
-    const handleThemeChange = (event: MediaQueryListEvent) => {
-      if (colorScheme === 'system') {
-        dispatch(setMode(event.matches ? 'dark' : 'light'));
-      }
-    };
-
-    theme.addEventListener('change', handleThemeChange);
-
-    return () => {
-      theme.removeEventListener('change', handleThemeChange);
-    };
-  }, [colorScheme]);
 
   return (
     <NextNavBar

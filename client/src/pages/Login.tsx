@@ -28,6 +28,7 @@ const Login = () => {
     axiosInstance
       .post('/api/user/login', { ...t })
       .then((res) => {
+        // Cookies.set('access-token', res.data.token);
         dispatch(setUser(res.data?.user));
         toast.success('Login successfull.');
         setIsLoading(false);
@@ -39,6 +40,7 @@ const Login = () => {
             {err?.response?.data?.errors?.map((el: any) => (
               <p key={el.msg}>{el.msg}</p>
             )) ??
+              err?.response?.data?.message ??
               err?.message ??
               'Error'}
           </div>

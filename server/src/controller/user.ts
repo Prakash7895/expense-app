@@ -73,7 +73,9 @@ export const userLogin = async (req: Request, res: Response) => {
 
       res.cookie('access-token', token, {
         maxAge: expiresIn * 1000,
-        httpOnly: false,
+        httpOnly: true,
+        sameSite: 'none',
+        // secure: true,
       });
 
       res.status(200).json({

@@ -120,8 +120,6 @@ const CrudComponent: FC<CrudComponentProps> = ({
   };
 
   const onRowAction = (key: Key, item: any) => {
-    console.log('ITEM', key, item);
-
     setSelectedItem(item);
     if (key === 'delete') {
       setIsModalOpen(true);
