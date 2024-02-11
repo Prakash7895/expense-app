@@ -1,10 +1,10 @@
 import { Modal, ModalProps } from '@nextui-org/react';
 import { FC } from 'react';
-import { getMode } from '../utils/store/userSlice';
+import { getSettings } from '../utils/store/settingSlice';
 import { useAppSelector } from '../utils/types';
 
 const NextUIModal: FC<ModalProps> = (props) => {
-  const mode = useAppSelector(getMode);
+  const { mode } = useAppSelector(getSettings);
 
   return (
     <Modal

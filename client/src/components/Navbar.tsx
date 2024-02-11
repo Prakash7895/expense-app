@@ -19,25 +19,23 @@ import {
   useAppDispatch,
   useAppSelector,
 } from '../utils/types';
-import {
-  getColorSheme,
-  getMode,
-  getUser,
-  setColorScheme,
-  setMode,
-  setUser,
-} from '../utils/store/userSlice';
+import { getUser, setUser } from '../utils/store/userSlice';
 import { setCategory } from '../utils/store/categorySlice';
-import { IoMoon, IoSettings, IoSunny } from 'react-icons/io5';
+import { IoClose, IoMenu, IoMoon, IoSettings, IoSunny } from 'react-icons/io5';
 import Dropdown from './Dropdown';
 import DropdownMenu from './DropdownMenu';
+import {
+  getSettings,
+  setColorScheme,
+  setMode,
+  setShowSidebar,
+} from '../utils/store/settingSlice';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector(getUser);
-  const mode = useAppSelector(getMode);
-  const colorScheme = useAppSelector(getColorSheme);
+  const { mode, colorScheme, showSidebar } = useAppSelector(getSettings);
 
   const userQuery = useQuery<User>({
     queryKey: ['loggedInUser'],
@@ -99,8 +97,19 @@ const Navbar = () => {
       isBordered
       className={`shadow-md ${mode} text-foreground-800 bg-background`}
     >
+      <Button
+        className='md:hidden'
+        isIconOnly
+        size='sm'
+        variant='solid'
+        onClick={() => {
+          dispatch(setShowSidebar(!showSidebar));
+        }}
+      >
+        {showSidebar ? <IoClose size={20} /> : <IoMenu size={20} />}
+      </Button>
       <NavbarBrand>
-        <Skeleton isLoaded={!!user} className='w-3/5 rounded-lg'>
+        <Skeleton isLoaded={!!user} className='md:w-3/5 rounded-lg'>
           <p className='font-bold text-inherit'>
             {user?.firstName + ' ' + user?.lastName}
           </p>
@@ -128,7 +137,7 @@ const Navbar = () => {
       <NavbarContent as='div' justify='end'>
         <Dropdown>
           <DropdownTrigger>
-            <Button variant='bordered' isIconOnly>
+            <Button variant='bordered' isIconOnly size='sm'>
               {colorScheme === 'dark' ? (
                 <IoMoon />
               ) : colorScheme === 'light' ? (

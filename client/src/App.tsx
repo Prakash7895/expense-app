@@ -13,8 +13,8 @@ import Account from './pages/Account';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Home from './pages/Home';
-import { getMode } from './utils/store/userSlice';
 import { IoClose } from 'react-icons/io5';
+import { getSettings } from './utils/store/settingSlice';
 
 export const sidebar = [
   { path: '/', label: 'Home', element: <Home /> },
@@ -49,7 +49,7 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient();
 
 function App() {
-  const mode = useSelector(getMode);
+  const { mode } = useSelector(getSettings);
   return (
     <QueryClientProvider client={queryClient}>
       <NextUIProvider
@@ -57,6 +57,7 @@ function App() {
       >
         <RouterProvider router={router} />
         <ToastContainer
+          className='mt-5'
           position='top-right'
           toastClassName={`${mode} text-foreground-600 bg-background-700`}
           closeButton={({ closeToast }) => (

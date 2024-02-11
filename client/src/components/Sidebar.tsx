@@ -1,12 +1,20 @@
 import { Link, useLocation } from 'react-router-dom';
 import { sidebar } from '../App';
+import { useSelector } from 'react-redux';
+import { getSettings, setShowSidebar } from '../utils/store/settingSlice';
+import { useAppDispatch } from '../utils/types';
 
 const Sidebar = () => {
   const { pathname } = useLocation();
-  console.log(pathname);
+  const dispatch = useAppDispatch();
+  const { showSidebar } = useSelector(getSettings);
 
   return (
-    <div className='w-1/5 max-w-52 shadow-medium bg-background pt-3 hidden md:block'>
+    <div
+      className={`max-w-52 shadow-medium bg-background pt-3 z-50 top-0 bottom-0 md:w-1/5 overflow-hidden absolute md:relative transition-all ${
+        showSidebar ? 'w-64' : 'w-0'
+      }`}
+    >
       {sidebar.map((item) => {
         return (
           <div key={item.path} className='p-1.5'>
@@ -17,6 +25,7 @@ const Sidebar = () => {
                   : 'hover:bg-primary-600 hover:text-foreground-50'
               } px-2 py-1 rounded-lg`}
               to={item.path}
+              onClick={() => dispatch(setShowSidebar(false))}
             >
               {item.label}
             </Link>

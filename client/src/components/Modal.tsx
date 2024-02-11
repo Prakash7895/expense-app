@@ -6,7 +6,7 @@ import {
   ModalHeader,
 } from '@nextui-org/react';
 import { FC, ReactNode } from 'react';
-import { getMode } from '../utils/store/userSlice';
+import { getSettings } from '../utils/store/settingSlice';
 import { useAppSelector } from '../utils/types';
 import NextUIModal from './NextUIModal';
 
@@ -27,7 +27,7 @@ const Modal: FC<ModalProps> = ({
   confirmBtnAction,
   confirmBtnLabel,
 }) => {
-  const mode = useAppSelector(getMode);
+  const { mode } = useAppSelector(getSettings);
 
   return (
     <NextUIModal
