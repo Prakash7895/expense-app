@@ -45,9 +45,7 @@ const Modal: FC<ModalProps> = ({
               <Button color='danger' variant='light' onPress={onClose}>
                 Close
               </Button>
-              <Button color='secondary' onPress={confirmBtnAction}>
-                {confirmBtnLabel}
-              </Button>
+              <Button onPress={confirmBtnAction}>{confirmBtnLabel}</Button>
             </ModalFooter>
           </>
         )}

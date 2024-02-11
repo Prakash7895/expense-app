@@ -2,7 +2,6 @@ import {
   Avatar,
   Button,
   DropdownItem,
-  DropdownMenu,
   DropdownTrigger,
   NavbarBrand,
   NavbarContent,
@@ -31,6 +30,7 @@ import {
 import { setCategory } from '../utils/store/categorySlice';
 import { IoMoon, IoSettings, IoSunny } from 'react-icons/io5';
 import Dropdown from './Dropdown';
+import DropdownMenu from './DropdownMenu';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -97,7 +97,7 @@ const Navbar = () => {
   return (
     <NextNavBar
       isBordered
-      className={`shadow-md ${mode} text-foreground-800 bg-content1`}
+      className={`shadow-md ${mode} text-foreground-800 bg-background`}
     >
       <NavbarBrand>
         <Skeleton isLoaded={!!user} className='w-3/5 rounded-lg'>
@@ -114,7 +114,7 @@ const Navbar = () => {
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link href='#' aria-current='page' color='secondary'>
+          <Link href='#' aria-current='page'>
             Customers
           </Link>
         </NavbarItem>
@@ -178,7 +178,6 @@ const Navbar = () => {
                 isBordered
                 as='button'
                 className='transition-transform'
-                color='secondary'
                 name='Jason Hughes'
                 size='sm'
                 src='https://i.pravatar.cc/150?u=a042581f4e29026704d'
@@ -186,7 +185,7 @@ const Navbar = () => {
             </DropdownTrigger>
           </Skeleton>
 
-          <DropdownMenu aria-label='Profile Actions' variant='flat'>
+          <DropdownMenu aria-label='Profile Actions'>
             <DropdownItem key='profile' className='h-14 gap-2'>
               <p className='font-semibold'>Signed in as</p>
               <p className='font-semibold'>

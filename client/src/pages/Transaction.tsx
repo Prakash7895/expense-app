@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader } from '@nextui-org/react';
+import { CardBody, CardHeader } from '@nextui-org/react';
 import { addTransaction } from '../utils/formFields';
 import { addTransactionSchema } from '../utils/validations';
 import { useAppSelector } from '../utils/types';
@@ -7,6 +7,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { transactionColumns } from '../utils/columnFields';
 import { useQuery } from '@tanstack/react-query';
 import CrudComponent from '../components/CrudComponent';
+import Card from '../components/Card';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
@@ -50,11 +51,7 @@ const Transaction = () => {
         },
       }}
       tableRowClassName={(item) =>
-        `border-b-medium ${
-          item.type === 'debit'
-            ? 'bg-danger-50 text-danger'
-            : 'bg-success-50 text-success'
-        }`
+        `border-b-medium ${item.type === 'debit' ? 'bg-danger-50' : 'bg-success-50'}`
       }
       formFields={addTransaction(categories ?? [])}
       formValidationSchema={addTransactionSchema}
@@ -66,7 +63,7 @@ const Transaction = () => {
       }}
       beforeTableComponent={
         <div className='my-5 flex gap-4 items-center'>
-          <Card className='py-4 text-foreground-600 bg-content1'>
+          <Card className='py-4 text-foreground-600'>
             <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
               <p className='text-tiny uppercase font-bold'>Total Earnings</p>
             </CardHeader>
@@ -76,7 +73,7 @@ const Transaction = () => {
               </h4>
             </CardBody>
           </Card>
-          <Card className='py-4 text-foreground-600 bg-content1'>
+          <Card className='py-4 text-foreground-600'>
             <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
               <p className='text-tiny uppercase font-bold'>Total Expenses</p>
             </CardHeader>

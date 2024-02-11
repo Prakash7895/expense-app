@@ -21,7 +21,7 @@ const PageHeader: FC<PageHeaderProps> = ({
         <p>{description}</p>
       </div>
       {btnLabel && (
-        <Button color='secondary' onPress={onPress}>
+        <Button className='text-default-50' onPress={onPress}>
           {btnLabel}
         </Button>
       )}

@@ -101,7 +101,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               {otherFormBodyElements}
             </FieldWrapper>
             <ButtonWrapper className={buttonWrapperClassName}>
-              <Button color='primary' type='submit' {...submitButtonProps}>
+              <Button type='submit' {...submitButtonProps}>
                 {submitButtonLabel}
               </Button>
               {otherFooterElements}

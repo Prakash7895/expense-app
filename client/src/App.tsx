@@ -14,6 +14,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import { getMode } from './utils/store/userSlice';
+import { IoClose } from 'react-icons/io5';
 
 export const sidebar = [
   { path: '/', label: 'Home', element: <Home /> },
@@ -52,10 +53,18 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <NextUIProvider
-        className={`h-screen flex flex-col ${mode} text-foreground-600 bg-content1`}
+        className={`h-screen flex flex-col ${mode} text-foreground-600 bg-background`}
       >
         <RouterProvider router={router} />
-        <ToastContainer position='top-right' />
+        <ToastContainer
+          position='top-right'
+          toastClassName={`${mode} text-foreground-600 bg-background-700`}
+          closeButton={({ closeToast }) => (
+            <div onClick={closeToast} className='cursor-pointer'>
+              <IoClose size={20} className={`${mode} text-foreground-600`} />
+            </div>
+          )}
+        />
       </NextUIProvider>
     </QueryClientProvider>
   );

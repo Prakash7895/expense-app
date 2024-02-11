@@ -12,6 +12,7 @@ const Select: FC<SelectProps> = (props) => {
       classNames={{
         ...props.classNames,
         popoverContent: `${mode} text-foreground bg-background ${props.classNames?.popoverContent}`,
+        value: `!text-default-900 ${props.classNames?.value}`,
       }}
     >
       {props.children}

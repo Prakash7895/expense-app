@@ -1,7 +1,6 @@
 import {
   Button,
   DropdownItem,
-  DropdownMenu,
   DropdownTrigger,
   Pagination,
   SelectItem,
@@ -30,6 +29,7 @@ import { IoEllipsisVertical } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 import Dropdown from './Dropdown';
 import Select from './Select';
+import DropdownMenu from './DropdownMenu';
 
 interface DataTableProps {
   columns: Column[];
@@ -103,12 +103,6 @@ const DataTable: FC<DataTableProps> = ({
     }
   }, [isError, error]);
 
-  // console.log('DATA', data);
-  // console.log('isLoading', isLoading);
-  // console.log('isPending', isPending);
-  // console.log('isFetching', isFetching);
-  // console.log('isRefetching', isRefetching);
-
   useEffect(() => {
     if (data?.total) {
       setTotalPages(Math.ceil(data?.total / rowsPerPage));
@@ -121,8 +115,6 @@ const DataTable: FC<DataTableProps> = ({
       return acc[field];
     }, item);
 
-    // console.log('columnKey', columnKey);
-    // console.log('columnRenderers?.[columnKey]', columnRenderers?.[columnKey]);
     if (columnRenderers?.[columnKey]) {
       return columnRenderers[columnKey](cellValue, item);
     }
@@ -132,7 +124,12 @@ const DataTable: FC<DataTableProps> = ({
         <div className='relative flex justify-end items-center gap-2'>
           <Dropdown>
             <DropdownTrigger>
-              <Button isIconOnly size='sm' variant='light'>
+              <Button
+                isIconOnly
+                className='text-default-800'
+                size='sm'
+                variant='light'
+              >
                 <IoEllipsisVertical />
               </Button>
             </DropdownTrigger>
@@ -178,8 +175,8 @@ const DataTable: FC<DataTableProps> = ({
 
   const bottomContent = useMemo(() => {
     return (
-      <div className='py-2 px-2 flex justify-between items-center'>
-        <span className='w-[30%] text-small text-default-400'>
+      <div className='py-2 px-2 flex flex-col sm:flex-row justify-between items-center gap-3'>
+        <span className='w-full text-center sm:text-left sm:w-[30%] text-small text-default-400'>
           {`Showing ${(page - 1) * rowsPerPage + 1}-${Math.min(
             data?.total ?? 0,
             page * rowsPerPage
@@ -190,27 +187,32 @@ const DataTable: FC<DataTableProps> = ({
           isCompact
           showControls
           showShadow
-          color='secondary'
           page={page}
           total={totalPages}
           onChange={setPage}
+          classNames={{
+            cursor: 'text-default-50',
+            item: 'text-default-900',
+            next: 'text-default-900 ',
+            prev: 'text-default-900',
+          }}
         />
         <div className='hidden sm:flex w-[30%] justify-end gap-2'>
           <Button
             isDisabled={page === 1}
             size='sm'
-            variant='flat'
-            color='secondary'
+            variant='solid'
             onPress={onPreviousPage}
+            className='text-default-50'
           >
             Previous
           </Button>
           <Button
             isDisabled={totalPages === page}
             size='sm'
-            variant='flat'
-            color='secondary'
+            variant='solid'
             onPress={onNextPage}
+            className='text-default-50'
           >
             Next
           </Button>
@@ -229,7 +231,7 @@ const DataTable: FC<DataTableProps> = ({
 
   const topContent = useMemo(() => {
     return (
-      <div className='flex justify-between items-center'>
+      <div className='flex flex-col sm:flex-row gap-3 justify-between items-center'>
         <span className='text-default-400 text-small'>
           Total {data?.total} rows.
         </span>
@@ -271,6 +273,7 @@ const DataTable: FC<DataTableProps> = ({
       bottomContentPlacement='outside'
       classNames={{
         wrapper: 'max-h-[400px]',
+        tr: 'border-default-50',
       }}
       shadow='md'
       className='mt-5'
