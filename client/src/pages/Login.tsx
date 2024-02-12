@@ -28,7 +28,7 @@ const Login = () => {
     axiosInstance
       .post('/api/user/login', { ...t })
       .then((res) => {
-        // Cookies.set('access-token', res.data.token);
+        Cookies.set('access-token', res.data.token);
         dispatch(setUser(res.data?.user));
         toast.success('Login successfull.');
         setIsLoading(false);

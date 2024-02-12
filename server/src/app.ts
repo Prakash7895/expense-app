@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import http from 'http';
+import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -21,7 +22,12 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: ['http://localhost:5173', 'http://192.168.29.176:5173'],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://192.168.29.176:3000',
+      'http://192.168.29.176:5173',
+    ],
   })
 );
 
@@ -53,6 +59,19 @@ app.use('/api/user', userRouter);
 app.use('/api/transaction', transactionRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/account', accountRouter);
+
+app.use((req, res, next) => {
+  if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
+    next();
+  } else {
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    res.sendFile(path.join(__dirname, '..', 'client-dist', 'index.html'));
+  }
+});
+
+app.use(express.static(path.join(__dirname, '..', 'client-dist')));
 
 const server = http.createServer(app);
 

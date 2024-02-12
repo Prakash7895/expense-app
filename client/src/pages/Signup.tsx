@@ -1,4 +1,4 @@
-import { CardBody, CardFooter, CardHeader, Link } from '@nextui-org/react';
+import { Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
 import { signupFormFields } from '../utils/formFields';
 import { signupSchema } from '../utils/validations';
@@ -38,7 +38,7 @@ const Signup = () => {
         fields={signupFormFields}
         onSubmit={onSubmit}
         validationSchema={signupSchema}
-        formHeader={"Sign up"}
+        formHeader={'Sign up'}
         submitButtonLabel='Sign up'
         submitButtonProps={{
           isLoading,

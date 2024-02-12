@@ -1,4 +1,3 @@
-import { CardBody, CardHeader } from '@nextui-org/react';
 import { addTransaction } from '../utils/formFields';
 import { addTransactionSchema } from '../utils/validations';
 import { useAppSelector } from '../utils/types';
@@ -7,7 +6,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { transactionColumns } from '../utils/columnFields';
 import { useQuery } from '@tanstack/react-query';
 import CrudComponent from '../components/CrudComponent';
-import Card from '../components/Card';
+import TransactionCard from '../components/TransactionCard';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
@@ -65,40 +64,25 @@ const Transaction = () => {
       }}
       beforeTableComponent={
         <div className='my-5 flex gap-4 items-center'>
-          <Card className='py-4 text-foreground-600 w-36'>
-            <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
-              <p className='text-tiny uppercase font-bold'>Total Earnings</p>
-            </CardHeader>
-            <CardBody className='overflow-visible py-2'>
-              <h4 className='font-bold text-large text-success'>
-                ${data?.data.totalCredit._sum.amount}
-              </h4>
-            </CardBody>
-          </Card>
+          <TransactionCard
+            label='Total Earnings'
+            body={`$${data?.data.totalCredit._sum.amount ?? 0}`}
+            bodyClassName='text-success'
+          />
           <h4 className='font-bold text-large'>-</h4>
-          <Card className='py-4 text-foreground-600 w-36'>
-            <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
-              <p className='text-tiny uppercase font-bold'>Total Expenses</p>
-            </CardHeader>
-            <CardBody className='overflow-visible py-2'>
-              <h4 className='font-bold text-large text-danger'>
-                ${data?.data.totalDebit._sum.amount}
-              </h4>
-            </CardBody>
-          </Card>
+          <TransactionCard
+            label='Total Expenses'
+            body={`$${data?.data.totalDebit._sum.amount ?? 0}`}
+            bodyClassName='text-danger'
+          />
           <h4 className='font-bold text-large'>=</h4>
-          <Card className='py-4 text-foreground-600 w-36'>
-            <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
-              <p className='text-tiny uppercase font-bold'>Balance</p>
-            </CardHeader>
-            <CardBody className='overflow-visible py-2'>
-              <h4 className='font-bold text-large'>
-                $
-                {data?.data.totalCredit._sum.amount -
-                  data?.data.totalDebit._sum.amount}
-              </h4>
-            </CardBody>
-          </Card>
+          <TransactionCard
+            label='Current Balance'
+            body={`$${
+              (data?.data.totalCredit._sum.amount || 0) -
+              (data?.data.totalDebit._sum.amount || 0)
+            }`}
+          />
         </div>
       }
     />
