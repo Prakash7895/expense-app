@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { IoClose } from 'react-icons/io5';
 import { getSettings, setMode } from './utils/store/settingSlice';
-import { lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { useAppDispatch } from './utils/types';
 const Home = lazy(() => import('./pages/Home'));
 const Transaction = lazy(() => import('./pages/Transaction'));
@@ -80,7 +80,9 @@ function App() {
       <NextUIProvider
         className={`h-screen flex flex-col ${mode} text-foreground-600 bg-background`}
       >
-        <RouterProvider router={router} />
+        <Suspense fallback={<div>Loading......</div>}>
+          <RouterProvider router={router} />
+        </Suspense>
         <ToastContainer
           className='mt-5'
           position='top-right'
