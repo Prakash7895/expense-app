@@ -1,9 +1,9 @@
-import { CardBody, CardFooter, CardHeader, Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
 import { forgotPassFormFields } from '../utils/formFields';
 import { forgotPassSchema } from '../utils/validations';
 import { useState } from 'react';
 import { IoArrowBackSharp } from 'react-icons/io5';
+import { Link } from 'react-router-dom';
 
 const ForgotPassword = () => {
   const [formFields, setFormFields] = useState([forgotPassFormFields[0]]);
@@ -54,7 +54,7 @@ const ForgotPassword = () => {
         onSubmit={onSubmit}
         validationSchema={forgotPassSchema(gotOtp, OtpEntered)}
         formHeader={
-          <CardHeader className='justify-center'>
+          <div className='justify-center'>
             {gotOtp && (
               <IoArrowBackSharp
                 className='absolute left-4 cursor-pointer'
@@ -62,17 +62,15 @@ const ForgotPassword = () => {
               />
             )}
             Sign up
-          </CardHeader>
+          </div>
         }
-        fieldsWrapperComponent={CardBody}
-        buttonsWrapperComponent={CardFooter}
         submitButtonLabel={
           gotOtp ? (OtpEntered ? 'Reset Password' : 'Verify OTP') : 'Get OTP'
         }
         otherFooterElements={
           <>
             <p>
-              Go to <Link href='/login'>Login</Link> page
+              Go to <Link to='/login'>Login</Link> page
             </p>
           </>
         }

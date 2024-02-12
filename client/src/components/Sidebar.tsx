@@ -26,6 +26,7 @@ const Sidebar = () => {
               } px-2 py-1 rounded-lg`}
               to={item.path}
               onClick={() => dispatch(setShowSidebar(false))}
+              onMouseOver={item.onMouseOver}
             >
               {item.label}
             </Link>

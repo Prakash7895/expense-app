@@ -1,11 +1,10 @@
-import { Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
 import { loginSchema } from '../utils/validations';
 import { loginFormFields } from '../utils/formFields';
 import { useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { useAppDispatch } from '../utils/types';
 import { setUser } from '../utils/store/userSlice';
@@ -65,8 +64,8 @@ const Login = () => {
         }}
         otherFormBodyElements={
           <div className='flex justify-between'>
-            <Link href='/signup'>Sign Up</Link>
-            <Link href='/forgot-password'>Forgot Password?</Link>
+            <Link to='/signup'>Sign Up</Link>
+            <Link to='/forgot-password'>Forgot Password?</Link>
           </div>
         }
         buttonWrapperClassName='justify-start items-center flex-row-reverse gap-3'

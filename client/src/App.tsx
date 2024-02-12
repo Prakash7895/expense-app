@@ -7,16 +7,24 @@ import { ToastContainer } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { IoClose } from 'react-icons/io5';
 import { getSettings, setMode } from './utils/store/settingSlice';
-import { Suspense, lazy, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppDispatch } from './utils/types';
-const Home = lazy(() => import('./pages/Home'));
-const Transaction = lazy(() => import('./pages/Transaction'));
-const Account = lazy(() => import('./pages/Account'));
-const Category = lazy(() => import('./pages/Category'));
-const Signup = lazy(() => import('./pages/Signup'));
-const Login = lazy(() => import('./pages/Login'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
-const PrivateRoutes = lazy(() => import('./components/PrivateRoutes'));
+import lazyWithPreload from './lazyWithPreload';
+const Home = lazyWithPreload(() => import('./pages/Home'));
+const Transaction = lazyWithPreload(() => import('./pages/Transaction'));
+const Account = lazyWithPreload(() => import('./pages/Account'));
+const Category = lazyWithPreload(() => import('./pages/Category'));
+const PrivateRoutes = lazyWithPreload(
+  () => import('./components/PrivateRoutes')
+);
+
+const Login = lazyWithPreload(() => import('./pages/Login'));
+const Signup = lazyWithPreload(() => import('./pages/Signup'));
+const ForgotPassword = lazyWithPreload(() => import('./pages/ForgotPassword'));
+
+Login.preload();
+Signup.preload();
+ForgotPassword.preload();
 
 export const sidebar = [
   { path: '/', label: 'Home', element: <Home /> },
@@ -24,16 +32,25 @@ export const sidebar = [
     path: '/transaction',
     label: 'Transaction',
     element: <Transaction />,
+    onMouseOver: () => {
+      Transaction.preload();
+    },
   },
   {
     path: '/account',
     label: 'Account',
     element: <Account />,
+    onMouseOver: () => {
+      Account.preload();
+    },
   },
   {
     path: '/category',
     label: 'Category',
     element: <Category />,
+    onMouseOver: () => {
+      Category.preload();
+    },
   },
 ];
 
@@ -80,9 +97,7 @@ function App() {
       <NextUIProvider
         className={`h-screen flex flex-col ${mode} text-foreground-600 bg-background`}
       >
-        <Suspense fallback={<div>Loading......</div>}>
-          <RouterProvider router={router} />
-        </Suspense>
+        <RouterProvider router={router} />
         <ToastContainer
           className='mt-5'
           position='top-right'

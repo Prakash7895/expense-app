@@ -1,10 +1,10 @@
-import { Link } from '@nextui-org/react';
 import DynamicForm from '../components/DynamicForm';
 import { signupFormFields } from '../utils/formFields';
 import { signupSchema } from '../utils/validations';
 import { useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +47,7 @@ const Signup = () => {
         otherFooterElements={
           <>
             <p>
-              Already have an account? <Link href='/login'>Login</Link>
+              Already have an account? <Link to='/login'>Login</Link>
             </p>
           </>
         }
