@@ -77,8 +77,6 @@ export const userLogin = async (req: Request, res: Response) => {
         sameSite: 'none',
         secure: true,
         path: '/',
-        // domain: req.headers.origin?.split('//')[1] + '/',
-        domain: '*',
       });
 
       res.status(200).json({
