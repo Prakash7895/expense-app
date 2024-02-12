@@ -73,7 +73,7 @@ export const userLogin = async (req: Request, res: Response) => {
 
       res.cookie('access-token', token, {
         maxAge: expiresIn * 1000,
-        httpOnly: true,
+        httpOnly: false,
         sameSite: 'none',
         secure: true,
       });
