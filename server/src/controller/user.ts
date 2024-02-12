@@ -77,7 +77,7 @@ export const userLogin = async (req: Request, res: Response) => {
         sameSite: 'none',
         secure: true,
         path: '/',
-        domain: 'localhost',
+        domain: req.headers.origin,
       });
 
       res.status(200).json({
