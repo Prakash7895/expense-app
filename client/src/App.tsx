@@ -5,18 +5,18 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { NextUIProvider } from '@nextui-org/react';
 import { ToastContainer } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import PrivateRoutes from './components/PrivateRoutes';
-import ForgotPassword from './pages/ForgotPassword';
-import Transaction from './pages/Transaction';
-import Category from './pages/Category';
-import Account from './pages/Account';
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import Home from './pages/Home';
 import { IoClose } from 'react-icons/io5';
 import { getSettings, setMode } from './utils/store/settingSlice';
-import { useEffect } from 'react';
+import { lazy, useEffect } from 'react';
 import { useAppDispatch } from './utils/types';
+const Home = lazy(() => import('./pages/Home'));
+const Transaction = lazy(() => import('./pages/Transaction'));
+const Account = lazy(() => import('./pages/Account'));
+const Category = lazy(() => import('./pages/Category'));
+const Signup = lazy(() => import('./pages/Signup'));
+const Login = lazy(() => import('./pages/Login'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const PrivateRoutes = lazy(() => import('./components/PrivateRoutes'));
 
 export const sidebar = [
   { path: '/', label: 'Home', element: <Home /> },
