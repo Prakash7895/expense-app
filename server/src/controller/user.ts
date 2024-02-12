@@ -76,6 +76,7 @@ export const userLogin = async (req: Request, res: Response) => {
         httpOnly: false,
         sameSite: 'none',
         secure: true,
+        path: '/',
       });
 
       res.status(200).json({
