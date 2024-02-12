@@ -75,7 +75,7 @@ export const userLogin = async (req: Request, res: Response) => {
         maxAge: expiresIn * 1000,
         httpOnly: true,
         sameSite: 'none',
-        // secure: true,
+        secure: true,
       });
 
       res.status(200).json({

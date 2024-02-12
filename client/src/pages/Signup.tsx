@@ -38,9 +38,7 @@ const Signup = () => {
         fields={signupFormFields}
         onSubmit={onSubmit}
         validationSchema={signupSchema}
-        formHeader={<CardHeader className='justify-center'>Sign up</CardHeader>}
-        fieldsWrapperComponent={CardBody}
-        buttonsWrapperComponent={CardFooter}
+        formHeader={"Sign up"}
         submitButtonLabel='Sign up'
         submitButtonProps={{
           isLoading,

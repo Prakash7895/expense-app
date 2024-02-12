@@ -46,7 +46,7 @@ app.use((req, _, next) => {
 app.get('/healthz', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Success',
+    message: 'Success!',
   });
 });
 app.use('/api/user', userRouter);
