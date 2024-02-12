@@ -83,7 +83,6 @@ export const userLogin = async (req: Request, res: Response) => {
         status: 'success',
         message: 'User logged in successfully.',
         token,
-        headers: req.headers,
         user: {
           email: user.email,
           phone: user.phone,
