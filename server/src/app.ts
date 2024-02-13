@@ -31,20 +31,27 @@ app.use(
   })
 );
 
-app.use((req, _, next) => {
+app.use((req, res, next) => {
   const accessToken = req.cookies['access-token'];
-  if (accessToken) {
-    const verifiedUser = jwt.verify(
-      accessToken,
-      process.env.JWT_SECRET_KEY ?? ''
-    ) as JwtPayload;
-    req.user = {
-      id: verifiedUser.id,
-      email: verifiedUser.email,
-      phone: verifiedUser.phone,
-      firstName: verifiedUser.firstName,
-      lastName: verifiedUser.lastName,
-    };
+  try {
+    if (accessToken) {
+      const verifiedUser = jwt.verify(
+        accessToken,
+        process.env.JWT_SECRET_KEY ?? ''
+      ) as JwtPayload;
+      req.user = {
+        id: verifiedUser.id,
+        email: verifiedUser.email,
+        phone: verifiedUser.phone,
+        firstName: verifiedUser.firstName,
+        lastName: verifiedUser.lastName,
+      };
+    }
+  } catch (err) {
+    res.clearCookie('access-token');
+    return res.status(302).json({
+      message: 'Unauthorized',
+    });
   }
   next();
 });

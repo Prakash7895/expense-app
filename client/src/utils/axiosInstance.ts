@@ -10,7 +10,8 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (
-      error.response?.status === 401 &&
+      error.response?.status === 302 ||
+      error.response?.status === 401 ||
       error.response?.data?.message === 'Unauthorized'
     ) {
       Cookies.remove('access-token');

@@ -66,21 +66,21 @@ const Transaction = () => {
         <div className='my-5 flex gap-4 items-center'>
           <TransactionCard
             label='Total Earnings'
-            body={`$${data?.data.totalCredit._sum.amount ?? 0}`}
+            body={`$${data?.data?.totalCredit._sum.amount ?? 0}`}
             bodyClassName='text-success'
           />
           <h4 className='font-bold text-large'>-</h4>
           <TransactionCard
             label='Total Expenses'
-            body={`$${data?.data.totalDebit._sum.amount ?? 0}`}
+            body={`$${data?.data?.totalDebit._sum.amount ?? 0}`}
             bodyClassName='text-danger'
           />
           <h4 className='font-bold text-large'>=</h4>
           <TransactionCard
             label='Current Balance'
             body={`$${
-              (data?.data.totalCredit._sum.amount || 0) -
-              (data?.data.totalDebit._sum.amount || 0)
+              (data?.data?.totalCredit._sum.amount || 0) -
+              (data?.data?.totalDebit._sum.amount || 0)
             }`}
           />
         </div>
