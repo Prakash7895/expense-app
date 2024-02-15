@@ -3,6 +3,8 @@ import validator from 'validator';
 import { Request, Response } from 'express';
 import { body, query, validationResult } from 'express-validator';
 import { PrismaClient } from '@prisma/client';
+import { Novu } from '@novu/node';
+import { countries } from './constants';
 
 export const prisma = new PrismaClient();
 
@@ -81,6 +83,17 @@ export const checkEitherEmailOrPhone = (field: string, label?: string) =>
     return true;
   });
 
+export const checkCountryCode = (field: string, label?: string) =>
+  body(field).custom((val, { req }) => {
+    if (
+      validator.isMobilePhone(req.body?.emailOrPhone, 'en-IN') &&
+      !countries.find((c) => c.countryCode === val?.trim())
+    ) {
+      throw new Error(`${label ? label : field} is not a valid country code.`);
+    }
+    return true;
+  });
+
 export const checkPassword = (field: string, label?: string) =>
   body(field)
     .isStrongPassword({
@@ -139,3 +152,57 @@ export const createQueryValidation = (sortByColumnArr?: string[]) => [
       }.`
     ),
 ];
+
+export const novu = new Novu(process.env.NOVU_API_KEY!);
+
+export const subscribeToNovu = async (user: {
+  id: string;
+  email?: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+}) => {
+  try {
+    const response = await novu.subscribers.identify(user.id, {
+      email: user.email,
+      phone: user.phone,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+    };
+  }
+};
+
+export const sendOnboardMessage = async (
+  subscriberId: string,
+  toMail: boolean = true
+) => {
+  try {
+    const response = await novu.trigger(
+      (toMail ? process.env.NOVU_ONBOARD_EMAIL : process.env.NOVU_ONBOARD_SMS)!,
+      {
+        to: {
+          subscriberId: subscriberId,
+        },
+        payload: {},
+      }
+    );
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+    };
+  }
+};

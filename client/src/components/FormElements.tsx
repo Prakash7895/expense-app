@@ -37,6 +37,8 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
   setValue,
   resetField,
   onFieldChange,
+  startContent,
+  classNames,
 }) => {
   const {
     field,
@@ -104,6 +106,11 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
           control={control}
           type={type}
           subType={subType}
+          setValue={setValue}
+          resetField={resetField}
+          classNames={classNames}
+          startContent={startContent}
+          onFieldChange={onFieldChange}
         />
       );
   }

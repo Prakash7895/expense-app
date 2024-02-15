@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { AppDispatch, RootState } from './store';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { UseFormResetField, UseFormSetValue } from 'react-hook-form';
+import { SlotsToClasses } from '@nextui-org/react';
 
 export interface User {
   firstName: string;
@@ -13,7 +14,7 @@ export interface User {
 export type Mode = 'dark' | 'light';
 export type ColorScheme = Mode | 'system';
 
-export interface FormFields {
+export interface FormFields<T extends string = any> {
   name: string;
   type: 'text' | 'select' | 'password' | 'textarea';
   className?: string;
@@ -29,6 +30,8 @@ export interface FormFields {
     resetField?: UseFormResetField<any>,
     setValue?: UseFormSetValue<any>
   ) => void;
+  startContent?: JSX.Element;
+  classNames?: SlotsToClasses<T>;
 }
 
 export interface Column {

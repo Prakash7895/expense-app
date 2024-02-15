@@ -1,3 +1,4 @@
+import { InputSlots } from '@nextui-org/react';
 import { Category, FormFields } from './types';
 
 export const loginFormFields: FormFields[] = [
@@ -10,7 +11,15 @@ export const loginFormFields: FormFields[] = [
   { label: 'Password', name: 'password', type: 'password' },
 ];
 
-export const signupFormFields: FormFields[] = [
+export const signupFormFields: (
+  showCountryCode: boolean,
+  setShowStartContent: (a: boolean) => void,
+  startContent: JSX.Element
+) => FormFields<InputSlots>[] = (
+  showCountryCode,
+  setShowStartContent,
+  startContent
+) => [
   {
     label: 'First Name',
     name: 'firstName',
@@ -25,16 +34,38 @@ export const signupFormFields: FormFields[] = [
     label: 'Email/Phone',
     name: 'emailOrPhone',
     type: 'text',
+    onFieldChange(event) {
+      setShowStartContent(/^\d+$/.test(event.target.value));
+    },
+    startContent: startContent,
+    classNames: {
+      label: `${showCountryCode ? 'left-40' : ''}`,
+    },
   },
   { label: 'Password', name: 'password', type: 'password' },
   { label: 'Confirm Password', name: 'confirmPassword', type: 'password' },
 ];
 
-export const forgotPassFormFields: FormFields[] = [
+export const forgotPassFormFields: (
+  showCountryCode: boolean,
+  setShowStartContent: (a: boolean) => void,
+  startContent: JSX.Element
+) => FormFields<InputSlots>[] = (
+  showCountryCode,
+  setShowStartContent,
+  startContent
+) => [
   {
     label: 'Email/Phone',
     name: 'emailOrPhone',
     type: 'text',
+    onFieldChange(event) {
+      setShowStartContent(/^\d+$/.test(event.target.value));
+    },
+    startContent: startContent,
+    classNames: {
+      label: `${showCountryCode ? 'left-40' : ''}`,
+    },
   },
   {
     label: 'OTP',

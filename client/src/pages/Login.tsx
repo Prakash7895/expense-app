@@ -64,8 +64,12 @@ const Login = () => {
         }}
         otherFormBodyElements={
           <div className='flex justify-between'>
-            <Link to='/signup'>Sign Up</Link>
-            <Link to='/forgot-password'>Forgot Password?</Link>
+            <Link to='/signup' className='text-primary-500'>
+              Sign Up
+            </Link>
+            <Link to='/forgot-password' className='text-secondary-600'>
+              Forgot Password?
+            </Link>
           </div>
         }
         buttonWrapperClassName='justify-start items-center flex-row-reverse gap-3'

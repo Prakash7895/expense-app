@@ -2,6 +2,7 @@ import express from 'express';
 import { userLogin, userSignUp } from '../controller/user';
 import { body } from 'express-validator';
 import {
+  checkCountryCode,
   checkEitherEmailOrPhone,
   checkPassword,
   emptyAndRequiredCheckInBody,
@@ -56,6 +57,7 @@ userRouter.use(
     emptyAndRequiredCheckInBody('lastName', 'Last Name'),
     requiredCheck('emailOrPhone', 'Email/Phone'),
     checkEitherEmailOrPhone('emailOrPhone', 'Email/Phone'),
+    checkCountryCode('countryCode', 'Country code'),
     checkPassword('password', 'Password'),
   ],
   body('emailOrPhone').custom(async (val) => {

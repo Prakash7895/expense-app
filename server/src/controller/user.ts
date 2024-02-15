@@ -1,11 +1,18 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { comparePassword, cryptPassword, prisma } from '../utils';
+import {
+  comparePassword,
+  cryptPassword,
+  prisma,
+  sendOnboardMessage,
+  subscribeToNovu,
+} from '../utils';
 import validator from 'validator';
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, emailOrPhone, password } = req.body;
+    const { firstName, lastName, emailOrPhone, password, countryCode } =
+      req.body;
 
     const email = validator.isEmail(emailOrPhone) ? emailOrPhone : null;
     const phone = validator.isMobilePhone(emailOrPhone) ? emailOrPhone : null;
@@ -19,8 +26,19 @@ export const userSignUp = async (req: Request, res: Response) => {
         email,
         phone,
         password: hash,
+        countryCode: countryCode ?? null,
       },
     });
+
+    await subscribeToNovu({
+      id: user.id,
+      email,
+      phone: phone ? `${countryCode}${phone}` : '',
+      firstName,
+      lastName,
+    });
+
+    sendOnboardMessage(user.id, !!email);
 
     res.status(200).json({
       status: 'success',

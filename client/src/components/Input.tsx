@@ -1,5 +1,10 @@
 import { FC, useState } from 'react';
-import { Control, useController } from 'react-hook-form';
+import {
+  Control,
+  UseFormResetField,
+  UseFormSetValue,
+  useController,
+} from 'react-hook-form';
 import { Input as NextUIInput } from '@nextui-org/react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { FormFields } from '../utils/types';
@@ -11,6 +16,8 @@ interface InputProps {
     },
     any
   >;
+  setValue: UseFormSetValue<any>;
+  resetField: UseFormResetField<any>;
 }
 
 const Input: FC<InputProps & FormFields> = ({
@@ -22,6 +29,11 @@ const Input: FC<InputProps & FormFields> = ({
   subType,
   control,
   defaultValue,
+  setValue,
+  resetField,
+  onFieldChange,
+  startContent,
+  classNames,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -53,6 +65,9 @@ const Input: FC<InputProps & FormFields> = ({
           const val = e.target.value?.replace(/[^0-9]/g, '');
           e.target.value = val;
         }
+        if (onFieldChange) {
+          onFieldChange(e, resetField, setValue);
+        }
         field.onChange(e);
       }}
       endContent={
@@ -71,6 +86,8 @@ const Input: FC<InputProps & FormFields> = ({
         ) : null
       }
       type={type === 'password' ? (isVisible ? 'text' : 'password') : type}
+      startContent={startContent}
+      classNames={classNames}
     />
   );
 };
