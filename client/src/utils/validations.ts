@@ -113,8 +113,8 @@ export const forgotPassSchema = (gotOtp: boolean, setPassword: boolean) =>
             .string()
             .required('OTP is required.')
             .matches(/^[0-9]+$/, 'Must be only digits.')
-            .min(5, 'Must be exactly 5 digits.')
-            .max(5, 'Must be exactly 5 digits.'),
+            .min(6, 'Must be exactly 6 digits.')
+            .max(6, 'Must be exactly 6 digits.'),
         }
       : {}),
 

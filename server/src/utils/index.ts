@@ -107,6 +107,13 @@ export const checkPassword = (field: string, label?: string) =>
       `${label} must be at least 8 characters including special character, lowercase, uppercase and numbers`
     );
 
+export const checkOTP = (field: string, label?: string) =>
+  requiredCheck(field, label)
+    .isLength({ min: 6, max: 6 })
+    .withMessage(`${label} must be of 6 numbers.`)
+    .isNumeric({ no_symbols: true })
+    .withMessage(`${label} must only be numbers.`);
+
 export const createQueryValidation = (sortByColumnArr?: string[]) => [
   (req: Request, res: Response, next: any) => {
     req.query.sortOrder = req.query.sortOrder ?? '';
@@ -195,6 +202,38 @@ export const sendOnboardMessage = async (
         payload: {},
       }
     );
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+    };
+  }
+};
+
+export const novuSendOtp = async (
+  subscriberId: string,
+  otp: string,
+  toMail: boolean = true
+) => {
+  try {
+    const response = await novu.trigger(
+      (toMail
+        ? process.env.NOVU_PASSWORD_RESET_EMAIL
+        : process.env.NOVU_PASSWORD_RESET_SMS)!,
+      {
+        to: {
+          subscriberId,
+        },
+        payload: {
+          otp: otp,
+        },
+      }
+    );
+
     return {
       success: true,
       data: response.data,

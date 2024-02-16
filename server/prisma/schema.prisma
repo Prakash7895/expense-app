@@ -35,6 +35,7 @@ model User {
   Category        Category[]
   Transaction     Transaction[] @relation("userTransaction")
   RentTransaction Transaction[] @relation("rentTransaction")
+  Otp             Otp[]
 }
 
 model Account {
@@ -75,4 +76,12 @@ model Category {
   updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
   User        User?           @relation(fields: [userId], references: [id])
   Transaction Transaction[]
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+  otp       String
+  userId    String   @default(uuid())
+  User      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
 }

@@ -32,6 +32,8 @@ export interface FormFields<T extends string = any> {
   ) => void;
   startContent?: JSX.Element;
   classNames?: SlotsToClasses<T>;
+  description?: ReactNode;
+  descriptionNode?: (val: any) => ReactNode;
 }
 
 export interface Column {

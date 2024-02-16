@@ -68,7 +68,10 @@ app.use('/api/category', categoryRouter);
 app.use('/api/account', accountRouter);
 
 app.use((req, res, next) => {
-  if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
+  if (
+    /(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path) ||
+    req.path === '/docs/'
+  ) {
     next();
   } else {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');

@@ -1,5 +1,6 @@
 import { InputSlots } from '@nextui-org/react';
 import { Category, FormFields } from './types';
+import { ReactNode } from 'react';
 
 export const loginFormFields: FormFields[] = [
   {
@@ -49,11 +50,13 @@ export const signupFormFields: (
 export const forgotPassFormFields: (
   showCountryCode: boolean,
   setShowStartContent: (a: boolean) => void,
-  startContent: JSX.Element
+  startContent: JSX.Element,
+  otpDescription: (val: any) => ReactNode
 ) => FormFields<InputSlots>[] = (
   showCountryCode,
   setShowStartContent,
-  startContent
+  startContent,
+  otpDescription
 ) => [
   {
     label: 'Email/Phone',
@@ -73,6 +76,8 @@ export const forgotPassFormFields: (
     type: 'text',
     subType: 'number',
     defaultValue: '',
+    classNames: { description: 'ml-auto' },
+    descriptionNode: otpDescription,
   },
   { label: 'Password', name: 'password', type: 'password', defaultValue: '' },
   {

@@ -3,11 +3,13 @@ import jwt from 'jsonwebtoken';
 import {
   comparePassword,
   cryptPassword,
+  novuSendOtp,
   prisma,
   sendOnboardMessage,
   subscribeToNovu,
 } from '../utils';
 import validator from 'validator';
+import { generate as OtpGenerator } from 'otp-generator';
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
@@ -109,11 +111,286 @@ export const userLogin = async (req: Request, res: Response) => {
         },
       });
     } else {
-      res.status(401).json({
+      res.status(400).json({
         status: 'error',
         message: 'Wrong password',
       });
     }
+  } catch (err: any) {
+    res.status(300).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const sendOTP = async (req: Request, res: Response) => {
+  try {
+    const { emailOrPhone, countryCode } = req.body;
+
+    const email = validator.isEmail(emailOrPhone) ? emailOrPhone : null;
+    const phone = validator.isMobilePhone(emailOrPhone) ? emailOrPhone : null;
+
+    let whereQuery: any = { email: email };
+
+    if (phone) {
+      whereQuery = {
+        phone: phone,
+        countryCode: countryCode,
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        ...whereQuery,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'User not found',
+      });
+    }
+
+    const otp = OtpGenerator(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+      upperCaseAlphabets: false,
+    });
+
+    const otpSent = await novuSendOtp(user.id, otp);
+
+    if (otpSent.success) {
+      await prisma.otp.create({
+        data: {
+          otp: otp,
+          userId: user.id,
+        },
+      });
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'OTP sent successfully.',
+        data: user,
+      });
+    }
+
+    res.status(400).json({
+      status: 'error',
+      message: 'Error sending OTP.',
+    });
+  } catch (err: any) {
+    res.status(300).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const verifyOTP = async (req: Request, res: Response) => {
+  try {
+    const { emailOrPhone, otp, countryCode } = req.body;
+
+    const email = validator.isEmail(emailOrPhone) ? emailOrPhone : null;
+    const phone = validator.isMobilePhone(emailOrPhone) ? emailOrPhone : null;
+
+    let whereQuery: any = { email: email };
+
+    if (phone) {
+      whereQuery = {
+        phone: phone,
+        countryCode: countryCode,
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        ...whereQuery,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'User not found',
+      });
+    }
+
+    const time = new Date(new Date().getTime() - 10 * 60 * 1000);
+
+    const savedOTP = await prisma.otp.findFirst({
+      where: {
+        userId: user.id,
+        createdAt: {
+          gt: time,
+        },
+      },
+    });
+
+    if (savedOTP?.otp === otp) {
+      return res.status(200).json({
+        status: 'success',
+        message: 'OTP verified successfully.',
+        data: user,
+      });
+    }
+
+    res.status(400).json({
+      status: 'error',
+      message: 'Invalid OTP.',
+    });
+  } catch (err: any) {
+    res.status(300).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const resendOTP = async (req: Request, res: Response) => {
+  try {
+    const { emailOrPhone, countryCode } = req.body;
+
+    const email = validator.isEmail(emailOrPhone) ? emailOrPhone : null;
+    const phone = validator.isMobilePhone(emailOrPhone) ? emailOrPhone : null;
+
+    let whereQuery: any = { email: email };
+
+    if (phone) {
+      whereQuery = {
+        phone: phone,
+        countryCode: countryCode,
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        ...whereQuery,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'User not found',
+      });
+    }
+
+    const time = new Date(new Date().getTime() - 10 * 60 * 1000);
+
+    const savedOTP = await prisma.otp.findFirst({
+      where: {
+        userId: user.id,
+        createdAt: {
+          gt: time,
+        },
+      },
+    });
+
+    let otp = savedOTP?.otp;
+
+    if (!otp) {
+      otp = OtpGenerator(6, {
+        digits: true,
+        lowerCaseAlphabets: false,
+        specialChars: false,
+        upperCaseAlphabets: false,
+      });
+    }
+
+    const otpSent = await novuSendOtp(user.id, otp);
+
+    if (otpSent.success) {
+      return res.status(200).json({
+        status: 'success',
+        message: 'OTP resent successfully.',
+        data: user,
+      });
+    }
+
+    res.status(400).json({
+      status: 'error',
+      message: 'Error sending OTP.',
+    });
+  } catch (err: any) {
+    res.status(300).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { emailOrPhone, otp, password, countryCode } = req.body;
+
+    const email = validator.isEmail(emailOrPhone) ? emailOrPhone : null;
+    const phone = validator.isMobilePhone(emailOrPhone) ? emailOrPhone : null;
+
+    let whereQuery: any = { email: email };
+
+    if (phone) {
+      whereQuery = {
+        phone: phone,
+        countryCode: countryCode,
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        ...whereQuery,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'User not found',
+      });
+    }
+
+    const time = new Date(new Date().getTime() - 10 * 60 * 1000);
+
+    const savedOTP = await prisma.otp.findFirst({
+      where: {
+        userId: user.id,
+        createdAt: {
+          gt: time,
+        },
+      },
+    });
+
+    if (savedOTP?.otp === otp) {
+      const hash = cryptPassword(password);
+
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          password: hash,
+        },
+      });
+
+      await prisma.otp.delete({
+        where: {
+          id: savedOTP?.id,
+        },
+      });
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Password updated successfully.',
+        data: user,
+      });
+    }
+
+    res.status(400).json({
+      status: 'error',
+      message: 'OTP is not valid.',
+    });
   } catch (err: any) {
     res.status(300).json({
       status: 'error',

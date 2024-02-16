@@ -39,6 +39,8 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
   onFieldChange,
   startContent,
   classNames,
+  description,
+  descriptionNode,
 }) => {
   const {
     field,
@@ -111,6 +113,9 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
           classNames={classNames}
           startContent={startContent}
           onFieldChange={onFieldChange}
+          description={
+            description ?? (descriptionNode && descriptionNode(watch()))
+          }
         />
       );
   }

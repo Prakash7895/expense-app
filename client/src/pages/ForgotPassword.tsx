@@ -9,6 +9,9 @@ import { countries } from '../utils/constants';
 import icons from 'country-flag-icons/react/3x2';
 import Select from '../components/Select';
 import { SelectItem } from '@nextui-org/react';
+import axiosInstance from '../utils/axiosInstance';
+import { errorToast } from '../utils';
+import { toast } from 'react-toastify';
 
 const ForgotPassword = () => {
   const [gotOtp, setGotOtp] = useState(false);
@@ -88,8 +91,36 @@ const ForgotPassword = () => {
     </>
   );
 
+  const otpDescription = (val: any) => (
+    <div>
+      <p
+        className='text-default cursor-pointer'
+        onClick={() => {
+          axiosInstance
+            .post('/api/user/resend-otp', {
+              emailOrPhone: val?.emailOrPhone,
+              countryCode: selectedOption?.value,
+            })
+            .then((res) => {
+              toast.success(res.data?.message);
+            })
+            .catch((err) => {
+              errorToast(err);
+            });
+        }}
+      >
+        Resend OTP
+      </p>
+    </div>
+  );
+
   const [formFields, setFormFields] = useState([
-    forgotPassFormFields(showCountryCode, setShowCountryCode, startContent)[0],
+    forgotPassFormFields(
+      showCountryCode,
+      setShowCountryCode,
+      startContent,
+      otpDescription
+    )[0],
   ]);
 
   useEffect(() => {
@@ -98,47 +129,113 @@ const ForgotPassword = () => {
         forgotPassFormFields(
           showCountryCode,
           setShowCountryCode,
-          startContent
+          startContent,
+          otpDescription
         )[0],
       ]);
     }
   }, [showCountryCode]);
 
-  const onSubmit = (t: any) => {
+  const onSubmit = (t: any, _: any, reset: any) => {
     console.log('onSubmit', t);
     setIsLoading(true);
     if (!gotOtp) {
-      setFormFields(
-        forgotPassFormFields(showCountryCode, setShowCountryCode, startContent)
-          .slice(0, 2)
-          .map((f) => ({
-            ...f,
-            isDisabled: f.name === 'emailOrPhone',
-          }))
-      );
-      setGotOtp(true);
-      setIsLoading(false);
+      axiosInstance
+        .post('/api/user/get-otp', {
+          emailOrPhone: t?.emailOrPhone,
+          countryCode: selectedOption?.value,
+        })
+        .then((res) => {
+          console.log('RES', res);
+          toast.success(res.data?.message);
+          setFormFields(
+            forgotPassFormFields(
+              showCountryCode,
+              setShowCountryCode,
+              startContent,
+              otpDescription
+            )
+              .slice(0, 2)
+              .map((f) => ({
+                ...f,
+                isDisabled: f.name === 'emailOrPhone',
+              }))
+          );
+          setGotOtp(true);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          errorToast(err);
+          setIsLoading(false);
+        });
     } else if (!OtpEntered) {
-      setFormFields(
-        forgotPassFormFields(
-          showCountryCode,
-          setShowCountryCode,
-          startContent
-        ).map((f) => ({
-          ...f,
-          isDisabled: ['emailOrPhone', 'otp'].includes(f.name),
-        }))
-      );
-      setOtpEntered(true);
-      setIsLoading(false);
+      axiosInstance
+        .post('/api/user/verify-otp', {
+          emailOrPhone: t?.emailOrPhone,
+          countryCode: selectedOption?.value,
+          otp: t?.otp,
+        })
+        .then((res) => {
+          console.log('RES2222', res);
+          toast.success(res.data?.message);
+          setFormFields(
+            forgotPassFormFields(
+              showCountryCode,
+              setShowCountryCode,
+              startContent,
+              otpDescription
+            ).map((f) => ({
+              ...f,
+              isDisabled: ['emailOrPhone', 'otp'].includes(f.name),
+            }))
+          );
+          setOtpEntered(true);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          errorToast(err);
+          setIsLoading(false);
+        });
+    } else {
+      axiosInstance
+        .post('/api/user/reset-password', {
+          emailOrPhone: t?.emailOrPhone,
+          countryCode: selectedOption?.value,
+          otp: t?.otp,
+          password: t?.password,
+        })
+        .then((res) => {
+          console.log('RES33333', res);
+          reset();
+          toast.success(res.data?.message);
+          setIsLoading(false);
+          setOtpEntered(false);
+          setGotOtp(false);
+          setFormFields([
+            forgotPassFormFields(
+              showCountryCode,
+              setShowCountryCode,
+              startContent,
+              otpDescription
+            )[0],
+          ]);
+        })
+        .catch((err) => {
+          errorToast(err);
+          setIsLoading(false);
+        });
     }
-    setIsLoading(false);
   };
 
   const onFormBack = () => {
     if (OtpEntered) {
       setFormFields(
-        forgotPassFormFields(showCountryCode, setShowCountryCode, startContent)
+        forgotPassFormFields(
+          showCountryCode,
+          setShowCountryCode,
+          startContent,
+          otpDescription
+        )
           .slice(0, 2)
           .map((f) => ({
             ...f,
@@ -151,7 +248,8 @@ const ForgotPassword = () => {
         forgotPassFormFields(
           showCountryCode,
           setShowCountryCode,
-          startContent
+          startContent,
+          otpDescription
         )[0],
       ]);
       setGotOtp(false);

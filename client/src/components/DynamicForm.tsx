@@ -6,7 +6,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, UseFormReset, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormFields } from '../utils/types';
 import { FC, ReactNode } from 'react';
@@ -14,7 +14,11 @@ import FormElements from './FormElements';
 import NextUIModal from './NextUIModal';
 
 interface DynamicFormProps {
-  onSubmit: SubmitHandler<any>;
+  onSubmit: (
+    data: FieldValues,
+    event?: React.BaseSyntheticEvent,
+    reset?: UseFormReset<any>
+  ) => unknown | Promise<unknown>;
   fields: FormFields[];
   validationSchema?: any;
   formHeader?: ReactNode;
@@ -57,7 +61,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     };
   }, {});
 
-  const { handleSubmit, control, watch, setValue, resetField } = useForm<
+  const { handleSubmit, control, watch, setValue, resetField, reset } = useForm<
     typeof defaultValues
   >({
     resolver: yupResolver(validationSchema),
@@ -78,7 +82,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
       hideCloseButton={hideCloseButton}
       scrollBehavior='inside'
       as={'form'}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit((data, event) => {
+        onSubmit(data, event, reset);
+      })}
       className={formClassName}
     >
       <ModalContent>

@@ -34,6 +34,7 @@ const Input: FC<InputProps & FormFields> = ({
   onFieldChange,
   startContent,
   classNames,
+  description,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -88,6 +89,7 @@ const Input: FC<InputProps & FormFields> = ({
       type={type === 'password' ? (isVisible ? 'text' : 'password') : type}
       startContent={startContent}
       classNames={classNames}
+      description={description}
     />
   );
 };
