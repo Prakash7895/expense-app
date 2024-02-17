@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  inviteUser,
   resendOTP,
   resetPassword,
   sendOTP,
@@ -302,6 +303,44 @@ userRouter.post(
   ],
   validateResult,
   resetPassword
+);
+
+/**
+ * @openapi
+ * '/api/user/invite':
+ *  post:
+ *     tags:
+ *     - User Controller
+ *     summary: Invite a user
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - emailOrPhone
+ *              - countryCode
+ *            properties:
+ *              emailOrPhone:
+ *                type: string
+ *                default: prakashchoudhary0141@gmail.com
+ *              countryCode:
+ *                type: string
+ *                default: +91
+ *     responses:
+ *      201:
+ *        description: Created
+ */
+userRouter.post(
+  '/invite',
+  [
+    requiredCheck('emailOrPhone', 'Email/Phone'),
+    checkEitherEmailOrPhone('emailOrPhone', 'Email/Phone'),
+    checkCountryCode('countryCode', 'Country code'),
+  ],
+  validateResult,
+  inviteUser
 );
 
 export default userRouter;

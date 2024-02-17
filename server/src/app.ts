@@ -45,6 +45,7 @@ app.use((req, res, next) => {
         phone: verifiedUser.phone,
         firstName: verifiedUser.firstName,
         lastName: verifiedUser.lastName,
+        countryCode: verifiedUser.countryCode,
       };
     }
   } catch (err) {

@@ -8,19 +8,14 @@ export const loginFormFields: FormFields[] = [
     name: 'emailOrPhone',
     type: 'text',
     className: 'my-3',
+    showCountryCode: true,
   },
   { label: 'Password', name: 'password', type: 'password' },
 ];
 
 export const signupFormFields: (
-  showCountryCode: boolean,
-  setShowStartContent: (a: boolean) => void,
-  startContent: JSX.Element
-) => FormFields<InputSlots>[] = (
-  showCountryCode,
-  setShowStartContent,
-  startContent
-) => [
+  emailOrPhone?: string | null
+) => FormFields<InputSlots>[] = (emailOrPhone) => [
   {
     label: 'First Name',
     name: 'firstName',
@@ -35,40 +30,22 @@ export const signupFormFields: (
     label: 'Email/Phone',
     name: 'emailOrPhone',
     type: 'text',
-    onFieldChange(event) {
-      setShowStartContent(/^\d+$/.test(event.target.value));
-    },
-    startContent: startContent,
-    classNames: {
-      label: `${showCountryCode ? 'left-40' : ''}`,
-    },
+    defaultValue: emailOrPhone ? emailOrPhone : '',
+    isDisabled: !!emailOrPhone,
+    showCountryCode: true,
   },
   { label: 'Password', name: 'password', type: 'password' },
   { label: 'Confirm Password', name: 'confirmPassword', type: 'password' },
 ];
 
 export const forgotPassFormFields: (
-  showCountryCode: boolean,
-  setShowStartContent: (a: boolean) => void,
-  startContent: JSX.Element,
   otpDescription: (val: any) => ReactNode
-) => FormFields<InputSlots>[] = (
-  showCountryCode,
-  setShowStartContent,
-  startContent,
-  otpDescription
-) => [
+) => FormFields<InputSlots>[] = (otpDescription) => [
   {
     label: 'Email/Phone',
     name: 'emailOrPhone',
     type: 'text',
-    onFieldChange(event) {
-      setShowStartContent(/^\d+$/.test(event.target.value));
-    },
-    startContent: startContent,
-    classNames: {
-      label: `${showCountryCode ? 'left-40' : ''}`,
-    },
+    showCountryCode: true,
   },
   {
     label: 'OTP',
@@ -147,5 +124,26 @@ export const accountFormFields: FormFields[] = [
     label: 'Description',
     name: 'description',
     type: 'textarea',
+  },
+];
+
+export const inviteFormFields: FormFields[] = [
+  {
+    label: 'Email/Phone',
+    name: 'emailOrPhone.0',
+    type: 'text',
+    showCountryCode: true,
+  },
+  {
+    label: 'Email/Phone',
+    name: 'emailOrPhone.1',
+    type: 'text',
+    showCountryCode: true,
+  },
+  {
+    label: 'Email/Phone',
+    name: 'emailOrPhone.2',
+    type: 'text',
+    showCountryCode: true,
   },
 ];

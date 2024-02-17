@@ -245,3 +245,36 @@ export const novuSendOtp = async (
     };
   }
 };
+
+export const novuInvite = async (
+  subscriber: any,
+  invitor: string,
+  toMail: boolean = true
+) => {
+  try {
+    const response = await novu.trigger(
+      (toMail ? process.env.NOVU_INVITE_EMAIL : process.env.NOVU_INVITE_SMS)!,
+      {
+        to: {
+          subscriberId: subscriber.id,
+        },
+        payload: {
+          invitor: invitor,
+          url: `${process.env.INVITE_URL}?emailOrPhone=${
+            toMail ? subscriber.email : subscriber.phone
+          }${toMail ? '' : 'countryCode=' + subscriber.countryCode}`,
+        },
+      }
+    );
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+    };
+  }
+};

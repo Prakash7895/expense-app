@@ -176,7 +176,9 @@ const Navbar = () => {
             <DropdownItem key='profile' className='h-14 gap-2'>
               <p className='font-semibold'>Signed in as</p>
               <p className='font-semibold'>
-                ${user?.email ?? user?.phone ?? 'N/A'}
+                {user?.firstName
+                  ? `${user?.firstName} ${user?.lastName}`
+                  : user?.email ?? user?.phone ?? 'N/A'}
               </p>
             </DropdownItem>
             {/* <DropdownItem key='settings'>My Settings</DropdownItem>

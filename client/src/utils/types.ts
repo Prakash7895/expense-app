@@ -34,6 +34,7 @@ export interface FormFields<T extends string = any> {
   classNames?: SlotsToClasses<T>;
   description?: ReactNode;
   descriptionNode?: (val: any) => ReactNode;
+  showCountryCode?: boolean;
 }
 
 export interface Column {

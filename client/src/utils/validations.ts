@@ -152,3 +152,34 @@ export const addCategorySchema = yup.object({
 export const addAccountSchema = yup.object({
   name: yup.string().required('Name is required.'),
 });
+
+export const inviteSchema = yup.object({
+  emailOrPhone: yup.array().of(
+    yup
+      .string()
+      .required('Email/Phone is required.')
+      .test(
+        'email-phone-test',
+        ({ value }) => {
+          if (value) {
+            if (numberOnlyRegex.test(value) && value.length !== 10) {
+              return 'Enter valid phone number.';
+            }
+            if (!emailRegex.test(value)) {
+              return 'Enter valid email address.';
+            }
+          }
+          return false;
+        },
+        (val) => {
+          if (val) {
+            if (numberOnlyRegex.test(val) && val.length === 10) {
+              return true;
+            }
+            return emailRegex.test(val);
+          }
+          return false;
+        }
+      )
+  ),
+});

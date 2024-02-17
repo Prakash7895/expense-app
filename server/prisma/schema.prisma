@@ -24,18 +24,18 @@ model User {
   phone           String?       @unique
   password        String?
   invitedById     String?       @unique @default(uuid())
-  landlordId      String?       @unique @default(uuid())
   createdAt       DateTime      @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
   invitedBy       User?         @relation("invitation", fields: [invitedById], references: [id])
   invitedUser     User?         @relation("invitation")
-  landlord        User?         @relation("landlord", fields: [landlordId], references: [id])
-  landlordUser    User?         @relation("landlord")
   Account         Account[]
   Category        Category[]
   Transaction     Transaction[] @relation("userTransaction")
   RentTransaction Transaction[] @relation("rentTransaction")
   Otp             Otp[]
+
+  relatedUsers  UserRelations[] @relation("relatedUser")
+  UserRelations UserRelations[]
 }
 
 model Account {
@@ -84,4 +84,26 @@ model Otp {
   userId    String   @default(uuid())
   User      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now()) @db.Timestamptz(3)
+}
+
+enum RelationTypes {
+  borrowed
+  rent
+}
+
+enum Status {
+  active
+  inActive
+}
+
+model UserRelations {
+  id            String        @id @default(uuid())
+  userId        String        @default(uuid())
+  User          User          @relation(fields: [userId], references: [id])
+  relatedUserId String        @default(uuid())
+  RelatedUser   User          @relation("relatedUser", fields: [relatedUserId], references: [id])
+  relationType  RelationTypes
+  status        Status
+  createdAt     DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
 }

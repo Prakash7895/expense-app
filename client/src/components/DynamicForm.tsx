@@ -61,9 +61,15 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     };
   }, {});
 
-  const { handleSubmit, control, watch, setValue, resetField, reset } = useForm<
-    typeof defaultValues
-  >({
+  const {
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    resetField,
+    reset,
+    register,
+  } = useForm<typeof defaultValues>({
     resolver: yupResolver(validationSchema),
     defaultValues: defaultValues,
     shouldUnregister: true,
@@ -94,14 +100,15 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               {formHeader}
             </ModalHeader>
             <FieldWrapper className={fieldsWrapperClassName}>
-              {fields.map((field) => (
+              {fields.map((field, idx) => (
                 <FormElements
-                  key={field.name}
+                  key={field.name + idx}
                   {...field}
                   control={control}
                   watch={watch}
                   setValue={setValue}
                   resetField={resetField}
+                  register={register}
                 />
               ))}
               {otherFormBodyElements}

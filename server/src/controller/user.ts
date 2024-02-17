@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import {
   comparePassword,
   cryptPassword,
+  novuInvite,
   novuSendOtp,
   prisma,
   sendOnboardMessage,
@@ -73,6 +74,11 @@ export const userLogin = async (req: Request, res: Response) => {
         status: 'error',
         message: 'User not found',
       });
+    } else if (!user.password) {
+      return res.status(400).json({
+        status: 'error',
+        message: "User hasn't onboarded.",
+      });
     }
 
     const hash = comparePassword(password, user?.password!);
@@ -84,6 +90,7 @@ export const userLogin = async (req: Request, res: Response) => {
           id: user.id,
           email: user.email,
           phone: user.phone,
+          countryCode: user.countryCode,
           firstName: user.firstName,
           lastName: user.lastName,
         },
@@ -160,7 +167,7 @@ export const sendOTP = async (req: Request, res: Response) => {
       upperCaseAlphabets: false,
     });
 
-    const otpSent = await novuSendOtp(user.id, otp);
+    const otpSent = await novuSendOtp(user.id, otp, !!email);
 
     if (otpSent.success) {
       await prisma.otp.create({
@@ -300,9 +307,18 @@ export const resendOTP = async (req: Request, res: Response) => {
       });
     }
 
-    const otpSent = await novuSendOtp(user.id, otp);
+    const otpSent = await novuSendOtp(user.id, otp, !!email);
 
     if (otpSent.success) {
+      if (!savedOTP?.otp) {
+        await prisma.otp.create({
+          data: {
+            otp: otp,
+            userId: user.id,
+          },
+        });
+      }
+
       return res.status(200).json({
         status: 'success',
         message: 'OTP resent successfully.',
@@ -390,6 +406,65 @@ export const resetPassword = async (req: Request, res: Response) => {
     res.status(400).json({
       status: 'error',
       message: 'OTP is not valid.',
+    });
+  } catch (err: any) {
+    res.status(300).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const inviteUser = async (req: Request, res: Response) => {
+  try {
+    const { emailOrPhone, countryCode } = req.body;
+
+    const email = validator.isEmail(emailOrPhone) ? emailOrPhone : null;
+    const phone = validator.isMobilePhone(emailOrPhone) ? emailOrPhone : null;
+
+    let whereQuery: any = { email: email };
+
+    if (phone) {
+      whereQuery = {
+        phone: phone,
+        countryCode: countryCode,
+      };
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        ...whereQuery,
+      },
+    });
+
+    if (!user) {
+      const newUser = await prisma.user.create({
+        data: {
+          email,
+          phone,
+          countryCode: countryCode ?? null,
+        },
+      });
+
+      const subs = await subscribeToNovu({
+        id: newUser.id,
+        email,
+        phone: phone ? `${countryCode}${phone}` : '',
+      });
+
+      if (subs.success) {
+        await novuInvite(
+          newUser,
+          `${req.user.firstName} ${req.user.lastName}`,
+          !!email
+        );
+      }
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'User invited successfully.',
+      data: user,
     });
   } catch (err: any) {
     res.status(300).json({

@@ -3,6 +3,7 @@ import Input from './Input';
 import { FormFields } from '../utils/types';
 import {
   Control,
+  UseFormRegister,
   UseFormResetField,
   UseFormSetValue,
   UseFormWatch,
@@ -21,6 +22,7 @@ interface FormElementsProps {
   watch: UseFormWatch<any>;
   setValue: UseFormSetValue<any>;
   resetField: UseFormResetField<any>;
+  register: UseFormRegister<{}>;
 }
 
 const FormElements: FC<FormElementsProps & FormFields> = ({
@@ -41,6 +43,8 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
   classNames,
   description,
   descriptionNode,
+  showCountryCode,
+  register,
 }) => {
   const {
     field,
@@ -116,6 +120,8 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
           description={
             description ?? (descriptionNode && descriptionNode(watch()))
           }
+          showCountryCode={showCountryCode}
+          register={register}
         />
       );
   }
