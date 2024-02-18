@@ -75,7 +75,7 @@ export const emptyAndRequiredCheckInBody = (field: string, label?: string) =>
 
 export const checkEitherEmailOrPhone = (field: string, label?: string) =>
   body(field).custom((val) => {
-    if (!(validator.isEmail(val) || validator.isMobilePhone(val, 'en-IN'))) {
+    if (!(validator.isEmail(val) || validator.isMobilePhone(val))) {
       throw new Error(
         `${label ? label : field} is not a valid email or phone number.`
       );
@@ -83,12 +83,17 @@ export const checkEitherEmailOrPhone = (field: string, label?: string) =>
     return true;
   });
 
-export const checkCountryCode = (field: string, label?: string) =>
-  body(field).custom((val, { req }) => {
-    if (
-      validator.isMobilePhone(req.body?.emailOrPhone, 'en-IN') &&
-      !countries.find((c) => c.countryCode === val?.trim())
-    ) {
+export const checkCountryCode = (field: string, label: string) =>
+  body(field).custom((val, meta) => {
+    const { req, path } = meta;
+    const idx = path.replace(/\D/g, '');
+    const parentPath = path.split('[')[0];
+    let checkVal = req.body?.emailOrPhone;
+    if (idx && parentPath) {
+      checkVal = req.body?.[parentPath][idx]?.emailOrPhone;
+    }
+    const isValidPhone = validator.isMobilePhone(checkVal);
+    if (isValidPhone && !countries.find((c) => c.countryCode === val?.trim())) {
       throw new Error(`${label ? label : field} is not a valid country code.`);
     }
     return true;

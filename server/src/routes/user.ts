@@ -335,9 +335,10 @@ userRouter.post(
 userRouter.post(
   '/invite',
   [
-    requiredCheck('emailOrPhone', 'Email/Phone'),
-    checkEitherEmailOrPhone('emailOrPhone', 'Email/Phone'),
-    checkCountryCode('countryCode', 'Country code'),
+    body('emailOrPhoneArr').isArray({ min: 1, max: 5 }),
+    requiredCheck('emailOrPhoneArr.*.emailOrPhone', 'Email/Phone'),
+    checkEitherEmailOrPhone('emailOrPhoneArr.*.emailOrPhone', 'Email/Phone'),
+    checkCountryCode('emailOrPhoneArr.*.countryCode', 'Country code'),
   ],
   validateResult,
   inviteUser

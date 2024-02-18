@@ -127,23 +127,9 @@ export const accountFormFields: FormFields[] = [
   },
 ];
 
-export const inviteFormFields: FormFields[] = [
-  {
-    label: 'Email/Phone',
-    name: 'emailOrPhone.0',
-    type: 'text',
-    showCountryCode: true,
-  },
-  {
-    label: 'Email/Phone',
-    name: 'emailOrPhone.1',
-    type: 'text',
-    showCountryCode: true,
-  },
-  {
-    label: 'Email/Phone',
-    name: 'emailOrPhone.2',
-    type: 'text',
-    showCountryCode: true,
-  },
-];
+export const inviteFormFields: FormFields = {
+  label: 'Email/Phone',
+  name: 'emailOrPhone',
+  type: 'text',
+  showCountryCode: true,
+};

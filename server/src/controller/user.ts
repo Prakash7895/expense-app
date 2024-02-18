@@ -417,54 +417,72 @@ export const resetPassword = async (req: Request, res: Response) => {
 
 export const inviteUser = async (req: Request, res: Response) => {
   try {
-    const { emailOrPhone, countryCode } = req.body;
+    const { emailOrPhoneArr } = req.body;
 
-    const email = validator.isEmail(emailOrPhone) ? emailOrPhone : null;
-    const phone = validator.isMobilePhone(emailOrPhone) ? emailOrPhone : null;
+    const whereQuery = emailOrPhoneArr?.map((el: any) => {
+      const email = validator.isEmail(el.emailOrPhone) ? el.emailOrPhone : null;
+      const phone = validator.isMobilePhone(el.emailOrPhone)
+        ? el.emailOrPhone
+        : null;
+      if (phone) {
+        return {
+          phone: phone,
+          countryCode: el.countryCode,
+        };
+      }
+      return { email: email };
+    });
 
-    let whereQuery: any = { email: email };
-
-    if (phone) {
-      whereQuery = {
-        phone: phone,
-        countryCode: countryCode,
-      };
-    }
-
-    const user = await prisma.user.findFirst({
+    const users = await prisma.user.findMany({
       where: {
-        ...whereQuery,
+        OR: whereQuery,
       },
     });
 
-    if (!user) {
-      const newUser = await prisma.user.create({
-        data: {
-          email,
-          phone,
-          countryCode: countryCode ?? null,
-        },
-      });
+    // let whereQuery: any = { email: email };
 
-      const subs = await subscribeToNovu({
-        id: newUser.id,
-        email,
-        phone: phone ? `${countryCode}${phone}` : '',
-      });
+    // if (phone) {
+    //   whereQuery = {
+    //     phone: phone,
+    //     countryCode: countryCode,
+    //   };
+    // }
 
-      if (subs.success) {
-        await novuInvite(
-          newUser,
-          `${req.user.firstName} ${req.user.lastName}`,
-          !!email
-        );
-      }
-    }
+    // const user = await prisma.user.findFirst({
+    //   where: {
+    //     ...whereQuery,
+    //   },
+    // });
 
-    return res.status(200).json({
-      status: 'success',
+    // if (!user) {
+    //   const newUser = await prisma.user.create({
+    //     data: {
+    //       email,
+    //       phone,
+    //       countryCode: countryCode ?? null,
+    //     },
+    //   });
+
+    //   const subs = await subscribeToNovu({
+    //     id: newUser.id,
+    //     email,
+    //     phone: phone ? `${countryCode}${phone}` : '',
+    //   });
+
+    //   if (subs.success) {
+    //     await novuInvite(
+    //       newUser,
+    //       `${req.user.firstName} ${req.user.lastName}`,
+    //       !!email
+    //     );
+    //   }
+    // }
+
+    return res.status(300).json({
+      // status: 'success',
+      status: 'error',
       message: 'User invited successfully.',
-      data: user,
+      // data: user,
     });
   } catch (err: any) {
     res.status(300).json({

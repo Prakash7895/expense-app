@@ -23,18 +23,15 @@ model User {
   countryCode     String?
   phone           String?       @unique
   password        String?
-  invitedById     String?       @unique @default(uuid())
   createdAt       DateTime      @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
-  invitedBy       User?         @relation("invitation", fields: [invitedById], references: [id])
-  invitedUser     User?         @relation("invitation")
   Account         Account[]
   Category        Category[]
   Transaction     Transaction[] @relation("userTransaction")
   RentTransaction Transaction[] @relation("rentTransaction")
   Otp             Otp[]
 
-  relatedUsers  UserRelations[] @relation("relatedUser")
+  relatedUsers  UserRelations[] @relation("invitedUser")
   UserRelations UserRelations[]
 }
 
@@ -86,24 +83,12 @@ model Otp {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
 }
 
-enum RelationTypes {
-  borrowed
-  rent
-}
-
-enum Status {
-  active
-  inActive
-}
-
 model UserRelations {
-  id            String        @id @default(uuid())
-  userId        String        @default(uuid())
-  User          User          @relation(fields: [userId], references: [id])
-  relatedUserId String        @default(uuid())
-  RelatedUser   User          @relation("relatedUser", fields: [relatedUserId], references: [id])
-  relationType  RelationTypes
-  status        Status
-  createdAt     DateTime      @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime      @updatedAt @db.Timestamptz(3)
+  id            String   @id @default(uuid())
+  userId        String   @default(uuid())
+  User          User     @relation(fields: [userId], references: [id])
+  invitedUserId String   @default(uuid())
+  InvitedUser   User     @relation("invitedUser", fields: [invitedUserId], references: [id])
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(3)
 }
