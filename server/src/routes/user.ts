@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   inviteUser,
+  listRelations,
   resendOTP,
   resetPassword,
   sendOTP,
@@ -10,10 +11,12 @@ import {
 } from '../controller/user';
 import { body } from 'express-validator';
 import {
+  authCheck,
   checkCountryCode,
   checkEitherEmailOrPhone,
   checkOTP,
   checkPassword,
+  createQueryValidation,
   emptyAndRequiredCheckInBody,
   prisma,
   requiredCheck,
@@ -319,15 +322,21 @@ userRouter.post(
  *           schema:
  *            type: object
  *            required:
- *              - emailOrPhone
- *              - countryCode
+ *              - emailOrPhoneArr
  *            properties:
- *              emailOrPhone:
- *                type: string
- *                default: prakashchoudhary0141@gmail.com
- *              countryCode:
- *                type: string
- *                default: +91
+ *              emailOrPhoneArr:
+ *                type: array
+ *                minItems: 1
+ *                maxItems: 5
+ *                items:
+ *                 type: object
+ *                 properties:
+ *                  emailOrPhone:
+ *                   type: string
+ *                   default: prakashchoudhary0141@gmail.com
+ *                  countryCode:
+ *                   type: string
+ *                   default: +91
  *     responses:
  *      201:
  *        description: Created
@@ -342,6 +351,46 @@ userRouter.post(
   ],
   validateResult,
   inviteUser
+);
+
+/**
+ * @openapi
+ * '/api/user/related-users':
+ *  get:
+ *     tags:
+ *     - User Controller
+ *     summary: Get logged in user's related users
+ *     parameters:
+ *      - name: pageNo
+ *        in: query
+ *        description: page number
+ *        required: true
+ *      - name: pageSize
+ *        in: query
+ *        description: page size
+ *        required: true
+ *      - name: sortBy
+ *        in: query
+ *        description: column name to sort by
+ *      - name: sortOrder
+ *        in: query
+ *        schema:
+ *          type: string
+ *          enum: [asc, desc]
+ *        description: >
+ *          Sort order:
+ *           * `asc` - Ascending, from A to Z
+ *           * `desc` - Descending, from Z to A
+ *     responses:
+ *      201:
+ *        description: Created
+ */
+userRouter.get(
+  '/related-user',
+  authCheck(),
+  createQueryValidation(['firstName']),
+  validateResult,
+  listRelations
 );
 
 export default userRouter;

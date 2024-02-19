@@ -11,10 +11,10 @@ import { toast } from 'react-toastify';
 interface CrudComponentProps {
   headerLabel: string;
   headerDescription: string;
-  headerBtnLabel: string;
+  headerBtnLabel?: string;
   formFields?: FormFields[];
   formValidationSchema?: any;
-  formHeader: string;
+  formHeader?: string;
   submitButtonLabel?: string;
   tableColumns: Column[];
   columnRenderers?: {
@@ -23,7 +23,7 @@ interface CrudComponentProps {
   api: string;
   queryKey: string[];
   tableRowClassName?: string | ((val: any) => string);
-  crudApi: string;
+  crudApi?: string;
   onSubmitSuccess?: (data?: any) => void;
   onDeleteSuccess?: (data?: any) => void;
   beforeTableComponent?: ReactNode;
@@ -69,6 +69,9 @@ const CrudComponent: FC<CrudComponentProps> = ({
     }, {});
 
     setIsSubmitting(true);
+    if (!crudApi) {
+      return;
+    }
 
     (selectedItem
       ? axiosInstance.put(`${crudApi}${selectedItem.id}`, transactionData)

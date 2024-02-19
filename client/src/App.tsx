@@ -14,6 +14,7 @@ const Home = lazyWithPreload(() => import('./pages/Home'));
 const Transaction = lazyWithPreload(() => import('./pages/Transaction'));
 const Account = lazyWithPreload(() => import('./pages/Account'));
 const Category = lazyWithPreload(() => import('./pages/Category'));
+const Relations = lazyWithPreload(() => import('./pages/Relations'));
 const PrivateRoutes = lazyWithPreload(
   () => import('./components/PrivateRoutes')
 );
@@ -50,6 +51,14 @@ export const sidebar = [
     element: <Category />,
     onMouseOver: () => {
       Category.preload();
+    },
+  },
+  {
+    path: '/users',
+    label: 'Users',
+    element: <Relations />,
+    onMouseOver: () => {
+      Relations.preload();
     },
   },
 ];

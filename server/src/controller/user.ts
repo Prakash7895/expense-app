@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import {
+  bulkSubscribeToNovu,
   comparePassword,
   cryptPassword,
   novuInvite,
@@ -419,7 +420,11 @@ export const inviteUser = async (req: Request, res: Response) => {
   try {
     const { emailOrPhoneArr } = req.body;
 
-    const whereQuery = emailOrPhoneArr?.map((el: any) => {
+    const whereQuery: {
+      email?: string;
+      phone?: string;
+      countryCode?: string;
+    }[] = emailOrPhoneArr?.map((el: any) => {
       const email = validator.isEmail(el.emailOrPhone) ? el.emailOrPhone : null;
       const phone = validator.isMobilePhone(el.emailOrPhone)
         ? el.emailOrPhone
@@ -439,50 +444,143 @@ export const inviteUser = async (req: Request, res: Response) => {
       },
     });
 
-    // let whereQuery: any = { email: email };
+    const newUsers = whereQuery?.filter((el: any) => {
+      const idx = users?.findIndex(
+        (user: any) =>
+          el.email === user.email ||
+          (el.phone === user.phone && el.countryCode === user.countryCode)
+      );
 
-    // if (phone) {
-    //   whereQuery = {
-    //     phone: phone,
-    //     countryCode: countryCode,
-    //   };
-    // }
+      return idx === -1;
+    });
 
-    // const user = await prisma.user.findFirst({
-    //   where: {
-    //     ...whereQuery,
-    //   },
-    // });
+    const relationToAdd: any[] = [];
 
-    // if (!user) {
-    //   const newUser = await prisma.user.create({
-    //     data: {
-    //       email,
-    //       phone,
-    //       countryCode: countryCode ?? null,
-    //     },
-    //   });
+    if (users.length) {
+      const existingRelations = await prisma.userRelations.findMany({
+        where: {
+          OR: [
+            {
+              userId: req.user.id,
+              invitedUserId: { in: users?.map((user) => user.id) },
+            },
+            {
+              invitedUserId: req.user.id,
+              userId: { in: users?.map((user) => user.id) },
+            },
+          ],
+        },
+      });
 
-    //   const subs = await subscribeToNovu({
-    //     id: newUser.id,
-    //     email,
-    //     phone: phone ? `${countryCode}${phone}` : '',
-    //   });
+      const newRelations = users.filter((user) => {
+        const idx = existingRelations.findIndex(
+          (relations) =>
+            user.id === relations.userId || user.id === relations.invitedUserId
+        );
 
-    //   if (subs.success) {
-    //     await novuInvite(
-    //       newUser,
-    //       `${req.user.firstName} ${req.user.lastName}`,
-    //       !!email
-    //     );
-    //   }
-    // }
+        return idx === -1;
+      });
+
+      relationToAdd.push(
+        ...newRelations.map((el) => ({
+          userId: req.user.id,
+          invitedUserId: el.id,
+        }))
+      );
+    }
+
+    if (newUsers.length) {
+      await prisma.user.createMany({
+        data: newUsers,
+      });
+      const usersAdded = await prisma.user.findMany({
+        where: {
+          OR: newUsers,
+        },
+      });
+
+      await bulkSubscribeToNovu(
+        usersAdded.map((user) => ({
+          id: user.id,
+          email: user.email as string,
+          phone: user.phone ? `${user.countryCode}${user.phone}` : '',
+          firstName: user.firstName as string,
+          lastName: user.lastName as string,
+        }))
+      );
+
+      relationToAdd.push(
+        ...usersAdded.map((el) => ({
+          userId: req.user.id,
+          invitedUserId: el.id,
+        }))
+      );
+
+      [...users, ...usersAdded].map(async (user) => {
+        await novuInvite(
+          user,
+          `${req.user.firstName} ${req.user.lastName}`,
+          !!user.email
+        );
+      });
+    }
+
+    if (relationToAdd.length) {
+      await prisma.userRelations.createMany({
+        data: relationToAdd,
+      });
+    }
 
     return res.status(300).json({
-      // status: 'success',
-      status: 'error',
+      status: 'success',
       message: 'User invited successfully.',
-      // data: user,
+    });
+  } catch (err: any) {
+    res.status(300).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const listRelations = async (req: Request, res: Response) => {
+  try {
+    const { pageNo, pageSize, sortBy, sortOrder } = req.query;
+
+    const skip = (Number(pageNo) - 1) * Number(pageSize);
+
+    const whereQuery = {
+      userId: req.user.id,
+    };
+
+    const relations = await prisma.userRelations.findMany({
+      where: {
+        OR: [{ userId: req.user.id }, { invitedUserId: req.user.id }],
+      },
+      include: {
+        User: true,
+        InvitedUser: true,
+      },
+      take: Number(pageSize),
+      skip,
+      orderBy: [
+        {
+          User: {
+            [sortBy as string]: sortOrder,
+          },
+        },
+        {
+          InvitedUser: {
+            [sortBy as string]: sortOrder,
+          },
+        },
+      ],
+    });
+
+    res.status(200).json({
+      success: true,
+      data: relations,
+      // total: total,
     });
   } catch (err: any) {
     res.status(300).json({

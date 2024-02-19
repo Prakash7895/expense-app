@@ -18,3 +18,8 @@ export const accountColumns: Column[] = [
   { name: 'Description', uid: 'description' },
   { name: 'Action', uid: 'actions' },
 ];
+
+export const userColumns: Column[] = [
+  { name: 'Name', uid: 'name', isSortable: true },
+  { name: 'Description', uid: 'description' },
+];

@@ -76,10 +76,10 @@ const Home = () => {
       {visible && (
         <DynamicForm
           onOpenChange={() => setVisible(false)}
-          formHeader='Login'
+          formHeader='Invite'
           onSubmit={inviteHandler}
           fields={getFields()}
-          submitButtonLabel='Sign In'
+          submitButtonLabel='Invite'
           validationSchema={inviteSchema}
           fieldsWrapperClassName='gap-0'
           submitButtonProps={{

@@ -193,6 +193,37 @@ export const subscribeToNovu = async (user: {
   }
 };
 
+export const bulkSubscribeToNovu = async (
+  users: {
+    id: string;
+    email?: string;
+    phone?: string;
+    firstName?: string;
+    lastName?: string;
+  }[]
+) => {
+  try {
+    const response = await novu.subscribers.bulkCreate(
+      users.map((user) => ({
+        subscriberId: user.id,
+        email: user.email,
+        phone: user.phone,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      }))
+    );
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      success: false,
+    };
+  }
+};
+
 export const sendOnboardMessage = async (
   subscriberId: string,
   toMail: boolean = true
@@ -267,7 +298,7 @@ export const novuInvite = async (
           invitor: invitor,
           url: `${process.env.INVITE_URL}?emailOrPhone=${
             toMail ? subscriber.email : subscriber.phone
-          }${toMail ? '' : 'countryCode=' + subscriber.countryCode}`,
+          }${toMail ? '' : '&countryCode=' + subscriber.countryCode}`,
         },
       }
     );
