@@ -7,7 +7,7 @@ import { Novu } from '@novu/node';
 import { countries } from './constants';
 
 export const prisma = new PrismaClient({
-  // log: ['query'],
+  // log: ['query', 'info', 'warn', 'error'],
 });
 
 export const cryptPassword = (password: string) => {
