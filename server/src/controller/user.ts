@@ -12,6 +12,7 @@ import {
 } from '../utils';
 import validator from 'validator';
 import { generate as OtpGenerator } from 'otp-generator';
+import { Prisma } from '@prisma/client';
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
@@ -545,45 +546,114 @@ export const inviteUser = async (req: Request, res: Response) => {
 
 export const listRelations = async (req: Request, res: Response) => {
   try {
-    const { pageNo, pageSize, sortBy, sortOrder } = req.query;
+    const {
+      pageNo,
+      pageSize,
+      sortBy,
+      sortOrder,
+      relatedUserName = '',
+    } = req.query;
 
     const skip = (Number(pageNo) - 1) * Number(pageSize);
 
-    const whereQuery = {
-      userId: req.user.id,
-    };
+    const loggedInUserId = req.user.id;
 
-    const relations = await prisma.userRelations.findMany({
-      where: {
-        OR: [{ userId: req.user.id }, { invitedUserId: req.user.id }],
-      },
-      include: {
-        User: true,
-        InvitedUser: true,
-      },
-      take: Number(pageSize),
-      skip,
-      orderBy: [
-        {
-          User: {
-            [sortBy as string]: sortOrder,
-          },
-        },
-        {
-          InvitedUser: {
-            [sortBy as string]: sortOrder,
-          },
-        },
-      ],
-    });
+    const direction =
+      sortOrder === 'asc' ? Prisma.sql(['ASC']) : Prisma.sql(['DESC']);
+
+    const column =
+      sortBy === 'createdAt'
+        ? Prisma.sql(['"UserRelations"."createdAt"'])
+        : Prisma.sql(['"relatedUserName"']);
+
+    const toSearch = `'%${relatedUserName ? relatedUserName : ''}%'`;
+
+    const searchVal = Prisma.sql([`${toSearch}`]);
+
+    const relations = await prisma.$queryRaw`SELECT * FROM (
+        SELECT
+        "UserRelations"."userId",
+        "UserRelations"."invitedUserId",
+        "UserRelations"."createdAt",
+        "currentUser"."id",
+        "currentUser"."firstName",
+        "currentUser"."lastName",
+        "relatedUser"."id",
+        "relatedUser"."firstName",
+        "relatedUser"."lastName",
+        CASE
+          WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."id"
+          ELSE "relatedUser"."id"
+        END AS "id",
+        CASE
+          WHEN "relatedUser"."id" = ${loggedInUserId} THEN CONCAT(
+            "currentUser"."firstName",
+            ' ',
+            "currentUser"."lastName"
+          )
+          ELSE CONCAT(
+            "relatedUser"."firstName",
+            ' ',
+            "relatedUser"."lastName"
+          )
+        END AS "relatedUserName"
+      FROM
+        "UserRelations"
+        LEFT JOIN "User" AS "currentUser" ON "UserRelations"."userId" = "currentUser"."id"
+        LEFT JOIN "User" AS "relatedUser" ON "UserRelations"."invitedUserId" = "relatedUser"."id"
+      WHERE
+        "UserRelations"."userId" = ${loggedInUserId}
+        OR "UserRelations"."invitedUserId" = ${loggedInUserId}
+      ORDER BY
+        ${column} ${direction}
+    ) WHERE LOWER("relatedUserName") LIKE ${searchVal} 
+      LIMIT ${pageSize} OFFSET ${skip};`;
+
+    const total = await prisma.$queryRaw<any[]>`SELECT COUNT(*) FROM (
+      SELECT
+      "UserRelations"."userId",
+      "UserRelations"."invitedUserId",
+      "UserRelations"."createdAt",
+      "currentUser"."id",
+      "currentUser"."firstName",
+      "currentUser"."lastName",
+      "relatedUser"."id",
+      "relatedUser"."firstName",
+      "relatedUser"."lastName",
+      CASE
+        WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."id"
+        ELSE "relatedUser"."id"
+      END AS "id",
+      CASE
+        WHEN "relatedUser"."id" = ${loggedInUserId} THEN CONCAT(
+          "currentUser"."firstName",
+          ' ',
+          "currentUser"."lastName"
+        )
+        ELSE CONCAT(
+          "relatedUser"."firstName",
+          ' ',
+          "relatedUser"."lastName"
+        )
+      END AS "relatedUserName"
+    FROM
+      "UserRelations"
+      LEFT JOIN "User" AS "currentUser" ON "UserRelations"."userId" = "currentUser"."id"
+      LEFT JOIN "User" AS "relatedUser" ON "UserRelations"."invitedUserId" = "relatedUser"."id"
+    WHERE
+      "UserRelations"."userId" = ${loggedInUserId}
+      OR "UserRelations"."invitedUserId" = ${loggedInUserId}
+    ORDER BY
+      ${column} ${direction}
+  ) WHERE LOWER("relatedUserName") LIKE ${searchVal};`;
 
     res.status(200).json({
       success: true,
       data: relations,
-      // total: total,
+      total: Number(total?.[0].count ?? 0),
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });

@@ -386,9 +386,9 @@ userRouter.post(
  *        description: Created
  */
 userRouter.get(
-  '/related-user',
+  '/related-users',
   authCheck(),
-  createQueryValidation(['firstName']),
+  createQueryValidation(['relatedUserName']),
   validateResult,
   listRelations
 );

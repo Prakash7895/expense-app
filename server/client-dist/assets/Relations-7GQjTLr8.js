@@ -1,1 +1,0 @@
-import{j as e}from"./index-MxM3qaZ7.js";import{C as r,u as s}from"./CrudComponent-rCoVSbk4.js";import"./DynamicForm-PkXGOcra.js";import"./axiosInstance-yT2stRlx.js";import"./DropdownMenu-Lpg-R490.js";const i=()=>e.jsx(r,{api:"/api/user/related-user",headerDescription:"Update and explore other users",headerLabel:"Users",queryKey:["users"],tableColumns:s});export{i as default};
