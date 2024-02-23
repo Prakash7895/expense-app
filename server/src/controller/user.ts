@@ -51,7 +51,7 @@ export const userSignUp = async (req: Request, res: Response) => {
       data: user,
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -126,7 +126,7 @@ export const userLogin = async (req: Request, res: Response) => {
       });
     }
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -191,7 +191,7 @@ export const sendOTP = async (req: Request, res: Response) => {
       message: 'Error sending OTP.',
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -251,7 +251,7 @@ export const verifyOTP = async (req: Request, res: Response) => {
       message: 'Invalid OTP.',
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -333,7 +333,7 @@ export const resendOTP = async (req: Request, res: Response) => {
       message: 'Error sending OTP.',
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -410,7 +410,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       message: 'OTP is not valid.',
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -532,12 +532,12 @@ export const inviteUser = async (req: Request, res: Response) => {
       });
     }
 
-    return res.status(300).json({
+    return res.status(200).json({
       status: 'success',
       message: 'User invited successfully.',
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
