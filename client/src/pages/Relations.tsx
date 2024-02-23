@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import CrudComponent from '../components/CrudComponent';
 import { userColumns } from '../utils/columnFields';
 
@@ -9,6 +10,9 @@ const Relations = () => {
       headerLabel='Users'
       queryKey={['users']}
       tableColumns={userColumns}
+      columnRenderers={{
+        createdAt: (val) => DateTime.fromISO(val).toFormat('DD, t a'),
+      }}
     />
   );
 };

@@ -1,6 +1,7 @@
 import { InputSlots } from '@nextui-org/react';
 import { Category, FormFields } from './types';
 import { ReactNode } from 'react';
+import axiosInstance from './axiosInstance';
 
 export const loginFormFields: FormFields[] = [
   {
@@ -65,7 +66,10 @@ export const forgotPassFormFields: (
   },
 ];
 
-export const addTransaction = (categoryList: Category[]) =>
+export const addTransaction = (
+  categoryList: Category[],
+  autoCompleteItem: (item: any) => ReactNode
+) =>
   [
     { label: 'Amount', name: 'amount', type: 'text', subType: 'number' },
     {
@@ -94,7 +98,18 @@ export const addTransaction = (categoryList: Category[]) =>
           : [],
     },
     { label: 'Description', name: 'description', type: 'text' },
-    { label: 'Renter', name: 'renter', type: 'text' },
+    {
+      label: 'User',
+      name: 'relatedUserId',
+      type: 'autocomplete',
+      autoCompleteItem: autoCompleteItem,
+      fetchData: (queryKey) =>
+        axiosInstance.get(
+          `/api/user/related-users?pageNo=1&pageSize=5${
+            queryKey[1] ? '&name=' + queryKey[1] : ''
+          }`
+        ),
+    },
   ] as FormFields[];
 
 export const categoryFormFields: FormFields[] = [

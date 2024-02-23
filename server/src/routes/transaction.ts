@@ -35,7 +35,7 @@ const transactionRouter = express.Router();
  *              - type
  *              - categoryId
  *              - description
- *              - renterId
+ *              - relatedUserId
  *              - accountId
  *            properties:
  *              amount:
@@ -50,7 +50,7 @@ const transactionRouter = express.Router();
  *              description:
  *                type: string
  *                default: This is description
- *              renterId:
+ *              relatedUserId:
  *                type: uuid
  *                default: d34e7fd7-dcfa-4925-ad47-e3f04b3d35c8
  *              accountId:
@@ -103,15 +103,17 @@ transactionRouter.post(
       }
       return true;
     }),
-    body('renterId').trim().optional(),
-    body('renterId').custom(async (val) => {
-      const userExists = await prisma.user.findFirst({
-        where: {
-          id: val,
-        },
-      });
-      if (!userExists) {
-        throw new Error('Renter does not exist.');
+    body('relatedUserId').trim().optional(),
+    body('relatedUserId').custom(async (val) => {
+      if (val) {
+        const userExists = await prisma.user.findFirst({
+          where: {
+            id: val,
+          },
+        });
+        if (!userExists) {
+          throw new Error('Renter does not exist.');
+        }
       }
 
       return true;
@@ -187,7 +189,7 @@ transactionRouter.get(
  *              - type
  *              - categoryId
  *              - description
- *              - renterId
+ *              - relatedUserId
  *            properties:
  *              amount:
  *                type: number
@@ -201,7 +203,7 @@ transactionRouter.get(
  *              description:
  *                type: string
  *                default: This is description
- *              renterId:
+ *              relatedUserId:
  *                type: uuid
  *                default: d34e7fd7-dcfa-4925-ad47-e3f04b3d35c8
  *     responses:
@@ -256,15 +258,17 @@ transactionRouter.put(
 
       return true;
     }),
-    body('renterId').trim().optional(),
-    body('renterId').custom(async (val) => {
-      const userExists = await prisma.user.findFirst({
-        where: {
-          id: val,
-        },
-      });
-      if (!userExists) {
-        throw new Error('Renter does not exist.');
+    body('relatedUserId').trim().optional(),
+    body('relatedUserId').custom(async (val) => {
+      if (val) {
+        const userExists = await prisma.user.findFirst({
+          where: {
+            id: val,
+          },
+        });
+        if (!userExists) {
+          throw new Error('Renter does not exist.');
+        }
       }
 
       return true;

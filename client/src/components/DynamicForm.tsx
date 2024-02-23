@@ -109,6 +109,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
                   setValue={setValue}
                   resetField={resetField}
                   register={register}
+                  initialValues={initialValues}
                 />
               ))}
               {otherFormBodyElements}

@@ -16,20 +16,20 @@ enum TransactionType {
 }
 
 model User {
-  id              String        @id @default(uuid())
-  firstName       String?
-  lastName        String?
-  email           String?       @unique
-  countryCode     String?
-  phone           String?       @unique
-  password        String?
-  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime      @updatedAt @db.Timestamptz(3)
-  Account         Account[]
-  Category        Category[]
-  Transaction     Transaction[] @relation("userTransaction")
-  RentTransaction Transaction[] @relation("rentTransaction")
-  Otp             Otp[]
+  id                     String        @id @default(uuid())
+  firstName              String?
+  lastName               String?
+  email                  String?       @unique
+  countryCode            String?
+  phone                  String?       @unique
+  password               String?
+  createdAt              DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime      @updatedAt @db.Timestamptz(3)
+  Account                Account[]
+  Category               Category[]
+  Transaction            Transaction[] @relation("userTransaction")
+  RelatedUserTransaction Transaction[] @relation("userRelatedToTransaction")
+  Otp                    Otp[]
 
   relatedUsers  UserRelations[] @relation("invitedUser")
   UserRelations UserRelations[]
@@ -47,21 +47,21 @@ model Account {
 }
 
 model Transaction {
-  id          String          @id @default(uuid())
-  amount      Float
-  type        TransactionType
-  balance     Float
-  categoryId  String          @default(uuid())
-  description String?
-  userId      String          @default(uuid())
-  renterId    String?         @default(uuid())
-  accountId   String?         @default(uuid())
-  createdAt   DateTime        @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime        @updatedAt @db.Timestamptz(3)
-  user        User            @relation("userTransaction", fields: [userId], references: [id])
-  renter      User?           @relation("rentTransaction", fields: [renterId], references: [id])
-  account     Account?        @relation(fields: [accountId], references: [id])
-  category    Category        @relation(fields: [categoryId], references: [id])
+  id            String          @id @default(uuid())
+  amount        Float
+  type          TransactionType
+  balance       Float
+  categoryId    String          @default(uuid())
+  description   String?
+  userId        String          @default(uuid())
+  relatedUserId String?         @default(uuid())
+  accountId     String?         @default(uuid())
+  createdAt     DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime        @updatedAt @db.Timestamptz(3)
+  user          User            @relation("userTransaction", fields: [userId], references: [id])
+  relatedUser   User?           @relation("userRelatedToTransaction", fields: [relatedUserId], references: [id])
+  account       Account?        @relation(fields: [accountId], references: [id])
+  category      Category        @relation(fields: [categoryId], references: [id])
 }
 
 model Category {

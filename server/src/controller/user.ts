@@ -546,13 +546,7 @@ export const inviteUser = async (req: Request, res: Response) => {
 
 export const listRelations = async (req: Request, res: Response) => {
   try {
-    const {
-      pageNo,
-      pageSize,
-      sortBy,
-      sortOrder,
-      relatedUserName = '',
-    } = req.query;
+    const { pageNo, pageSize, sortBy, sortOrder, name = '' } = req.query;
 
     const skip = (Number(pageNo) - 1) * Number(pageSize);
 
@@ -566,11 +560,11 @@ export const listRelations = async (req: Request, res: Response) => {
         ? Prisma.sql(['"UserRelations"."createdAt"'])
         : Prisma.sql(['"relatedUserName"']);
 
-    const toSearch = `'%${relatedUserName ? relatedUserName : ''}%'`;
+    const toSearch = `'%${name ? (name as string)?.toLowerCase() : ''}%'`;
 
     const searchVal = Prisma.sql([`${toSearch}`]);
 
-    const relations = await prisma.$queryRaw`SELECT * FROM (
+    const relations = await prisma.$queryRaw<any[]>`SELECT * FROM (
         SELECT
         "UserRelations"."userId",
         "UserRelations"."invitedUserId",
@@ -578,13 +572,31 @@ export const listRelations = async (req: Request, res: Response) => {
         "currentUser"."id",
         "currentUser"."firstName",
         "currentUser"."lastName",
+        "currentUser"."email",
+        "currentUser"."phone",
+        "currentUser"."countryCode",
         "relatedUser"."id",
         "relatedUser"."firstName",
         "relatedUser"."lastName",
+        "relatedUser"."email",
+        "relatedUser"."phone",
+        "relatedUser"."countryCode",
         CASE
           WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."id"
           ELSE "relatedUser"."id"
         END AS "id",
+        CASE
+          WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."email"
+          ELSE "relatedUser"."email"
+        END AS "relatedUserEmail",
+        CASE
+          WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."phone"
+          ELSE "relatedUser"."phone"
+        END AS "relatedUserPhone",
+        CASE
+          WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."countryCode"
+          ELSE "relatedUser"."countryCode"
+        END AS "relatedUserCountryCode",
         CASE
           WHEN "relatedUser"."id" = ${loggedInUserId} THEN CONCAT(
             "currentUser"."firstName",
@@ -649,7 +661,14 @@ export const listRelations = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      data: relations,
+      data: relations.map((el) => ({
+        id: el.id,
+        name: el.relatedUserName,
+        email: el.relatedUserEmail,
+        phone: el.relatedUserPhone,
+        countryCode: el.relatedUserCountryCode,
+        createdAt: el.createdAt,
+      })),
       total: Number(total?.[0].count ?? 0),
     });
   } catch (err: any) {

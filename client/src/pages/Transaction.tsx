@@ -7,6 +7,7 @@ import { transactionColumns } from '../utils/columnFields';
 import { useQuery } from '@tanstack/react-query';
 import CrudComponent from '../components/CrudComponent';
 import TransactionCard from '../components/TransactionCard';
+import { AutocompleteItem } from '@nextui-org/react';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
@@ -26,6 +27,39 @@ const Transaction = () => {
 
   // console.log('DATA', data?.data);
 
+  const getDesc = (item: any) => {
+    if (item?.category?.name === 'Rent') {
+      return `Rent ${item.type === 'debit' ? 'to' : 'from'} ${
+        item?.relatedUser?.firstName
+      } ${item?.relatedUser?.lastName}`;
+    } else if (item?.category?.name === 'Borrowed') {
+      return `Borrowed ${item.type === 'debit' ? 'to' : 'from'} ${
+        item?.relatedUser?.firstName
+      } ${item?.relatedUser?.lastName}`;
+    }
+    return item?.description;
+  };
+
+  const renderOption = (item: any) => (
+    <AutocompleteItem
+      key={item.id}
+      textValue={`${
+        item.name ? item.name : item.firstName + ' ' + item.lastName
+      }`}
+    >
+      <div className='flex gap-2 items-center'>
+        <div className='flex flex-col'>
+          <span className='text-small'>{`${
+            item.name ? item.name : item.firstName + ' ' + item.lastName
+          }`}</span>
+          <span className='text-tiny text-default-400'>
+            {item.email ? item.email : `${item.countryCode}-${item.phone}`}
+          </span>
+        </div>
+      </div>
+    </AutocompleteItem>
+  );
+
   return (
     <CrudComponent
       headerLabel='Transactions'
@@ -43,7 +77,7 @@ const Transaction = () => {
             <div className='flex flex-col'>
               <p className='text-bold text-small capitalize'>{val?.name}</p>
               <p className='text-bold text-tiny capitalize text-default-400'>
-                {item?.description}
+                {getDesc(item)}
               </p>
             </div>
           );
@@ -54,7 +88,7 @@ const Transaction = () => {
           item.type === 'debit' ? 'bg-danger-50' : 'bg-success-50'
         }`
       }
-      formFields={addTransaction(categories ?? [])}
+      formFields={addTransaction(categories ?? [], renderOption)}
       formValidationSchema={addTransactionSchema}
       onSubmitSuccess={() => {
         refetch();

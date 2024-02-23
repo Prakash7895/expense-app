@@ -3,7 +3,7 @@ import { prisma } from '../utils';
 
 export const addTransaction = async (req: Request, res: Response) => {
   try {
-    const { amount, type, categoryId, description, renterId, accountId } =
+    const { amount, type, categoryId, description, relatedUserId, accountId } =
       req.body;
 
     const sumCredit = await prisma.transaction.aggregate({
@@ -35,8 +35,8 @@ export const addTransaction = async (req: Request, res: Response) => {
         categoryId: categoryId,
         userId: req.user.id,
         balance: balance,
-        renterId: renterId ?? null,
-        accountId: accountId ?? null,
+        relatedUserId: relatedUserId || null,
+        accountId: accountId || null,
       },
     });
 
@@ -46,7 +46,7 @@ export const addTransaction = async (req: Request, res: Response) => {
       data: created,
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -74,7 +74,16 @@ export const listTransactions = async (req: Request, res: Response) => {
             id: true,
           },
         },
-        renter: true,
+        relatedUser: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            countryCode: true,
+          },
+        },
       },
       take: Number(pageSize),
       skip,
@@ -95,7 +104,7 @@ export const listTransactions = async (req: Request, res: Response) => {
       total: total,
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });
@@ -104,7 +113,7 @@ export const listTransactions = async (req: Request, res: Response) => {
 
 export const updateTransaction = async (req: Request, res: Response) => {
   try {
-    const { amount, type, categoryId, description, renterId, accountId } =
+    const { amount, type, categoryId, description, relatedUserId, accountId } =
       req.body;
 
     const transactionId = req.params.transactionId;
@@ -137,12 +146,12 @@ export const updateTransaction = async (req: Request, res: Response) => {
       data: {
         amount: amount,
         type: type,
-        description: description ?? null,
+        description: description || null,
         userId: req.user.id,
         categoryId: categoryId,
         balance: balance,
-        renterId: renterId ?? null,
-        accountId: accountId ?? null,
+        relatedUserId: relatedUserId || null,
+        accountId: accountId || null,
       },
     });
 
@@ -232,7 +241,7 @@ export const getBalanceInfo = async (req: Request, res: Response) => {
       },
     });
   } catch (err: any) {
-    res.status(300).json({
+    res.status(400).json({
       status: 'error',
       message: err.message,
     });

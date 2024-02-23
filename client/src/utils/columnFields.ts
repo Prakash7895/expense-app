@@ -20,6 +20,6 @@ export const accountColumns: Column[] = [
 ];
 
 export const userColumns: Column[] = [
-  { name: 'Name', uid: 'relatedUserName', isSortable: true },
+  { name: 'Name', uid: 'name', isSortable: true },
   { name: 'Invited On', uid: 'createdAt', isSortable: true },
 ];

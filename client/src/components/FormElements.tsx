@@ -11,6 +11,7 @@ import {
 } from 'react-hook-form';
 import { SelectItem, Textarea } from '@nextui-org/react';
 import Select from './Select';
+import AutoComplete from './AutoComplete';
 
 interface FormElementsProps {
   control: Control<
@@ -23,6 +24,7 @@ interface FormElementsProps {
   setValue: UseFormSetValue<any>;
   resetField: UseFormResetField<any>;
   register: UseFormRegister<{}>;
+  initialValues?: { [key: string]: any };
 }
 
 const FormElements: FC<FormElementsProps & FormFields> = ({
@@ -45,6 +47,9 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
   descriptionNode,
   showCountryCode,
   register,
+  initialValues,
+  autoCompleteItem,
+  fetchData,
 }) => {
   const {
     field,
@@ -98,6 +103,20 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
           {...field}
           size='sm'
           variant='bordered'
+        />
+      );
+
+    case 'autocomplete':
+      return (
+        <AutoComplete
+          {...field}
+          label={label}
+          type={type}
+          errors={errors}
+          defaultValue={defaultValue}
+          initialValues={initialValues}
+          autoCompleteItem={autoCompleteItem}
+          fetchData={fetchData}
         />
       );
 
