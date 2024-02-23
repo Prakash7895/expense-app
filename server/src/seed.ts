@@ -1,6 +1,6 @@
 import { prisma } from './utils';
 
-const incomeList = ['Business', 'Loan', 'Salary', 'Borrowed'];
+const incomeList = ['Borrowed', 'Business', 'Loan', 'Rent', 'Salary'];
 const expenseList = [
   'Bills',
   'Clothing',
