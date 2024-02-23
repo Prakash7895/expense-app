@@ -565,7 +565,7 @@ export const listRelations = async (req: Request, res: Response) => {
     const searchVal = Prisma.sql([`${toSearch}`]);
 
     const relations = await prisma.$queryRaw<any[]>`SELECT * FROM (
-        SELECT
+      SELECT
         "UserRelations"."userId",
         "UserRelations"."invitedUserId",
         "UserRelations"."createdAt",
@@ -618,46 +618,46 @@ export const listRelations = async (req: Request, res: Response) => {
         OR "UserRelations"."invitedUserId" = ${loggedInUserId}
       ORDER BY
         ${column} ${direction}
-    ) WHERE LOWER("relatedUserName") LIKE ${searchVal} 
+    ) AS "relatedUserTable" WHERE LOWER("relatedUserName") LIKE ${searchVal} 
       LIMIT ${pageSize} OFFSET ${skip};`;
 
     const total = await prisma.$queryRaw<any[]>`SELECT COUNT(*) FROM (
       SELECT
-      "UserRelations"."userId",
-      "UserRelations"."invitedUserId",
-      "UserRelations"."createdAt",
-      "currentUser"."id",
-      "currentUser"."firstName",
-      "currentUser"."lastName",
-      "relatedUser"."id",
-      "relatedUser"."firstName",
-      "relatedUser"."lastName",
-      CASE
-        WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."id"
-        ELSE "relatedUser"."id"
-      END AS "id",
-      CASE
-        WHEN "relatedUser"."id" = ${loggedInUserId} THEN CONCAT(
-          "currentUser"."firstName",
-          ' ',
-          "currentUser"."lastName"
-        )
-        ELSE CONCAT(
-          "relatedUser"."firstName",
-          ' ',
-          "relatedUser"."lastName"
-        )
-      END AS "relatedUserName"
-    FROM
-      "UserRelations"
-      LEFT JOIN "User" AS "currentUser" ON "UserRelations"."userId" = "currentUser"."id"
-      LEFT JOIN "User" AS "relatedUser" ON "UserRelations"."invitedUserId" = "relatedUser"."id"
-    WHERE
-      "UserRelations"."userId" = ${loggedInUserId}
-      OR "UserRelations"."invitedUserId" = ${loggedInUserId}
-    ORDER BY
-      ${column} ${direction}
-  ) WHERE LOWER("relatedUserName") LIKE ${searchVal};`;
+        "UserRelations"."userId",
+        "UserRelations"."invitedUserId",
+        "UserRelations"."createdAt",
+        "currentUser"."id",
+        "currentUser"."firstName",
+        "currentUser"."lastName",
+        "relatedUser"."id",
+        "relatedUser"."firstName",
+        "relatedUser"."lastName",
+        CASE
+          WHEN "relatedUser"."id" = ${loggedInUserId} THEN "currentUser"."id"
+          ELSE "relatedUser"."id"
+        END AS "id",
+        CASE
+          WHEN "relatedUser"."id" = ${loggedInUserId} THEN CONCAT(
+            "currentUser"."firstName",
+            ' ',
+            "currentUser"."lastName"
+          )
+          ELSE CONCAT(
+            "relatedUser"."firstName",
+            ' ',
+            "relatedUser"."lastName"
+          )
+        END AS "relatedUserName"
+      FROM
+        "UserRelations"
+        LEFT JOIN "User" AS "currentUser" ON "UserRelations"."userId" = "currentUser"."id"
+        LEFT JOIN "User" AS "relatedUser" ON "UserRelations"."invitedUserId" = "relatedUser"."id"
+      WHERE
+        "UserRelations"."userId" = ${loggedInUserId}
+        OR "UserRelations"."invitedUserId" = ${loggedInUserId}
+      ORDER BY
+        ${column} ${direction}
+    ) AS "relatedUserTable" WHERE LOWER("relatedUserName") LIKE ${searchVal};`;
 
     res.status(200).json({
       success: true,
