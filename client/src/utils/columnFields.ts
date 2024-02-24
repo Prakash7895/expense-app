@@ -4,6 +4,7 @@ export const transactionColumns: Column[] = [
   { name: 'Category', uid: 'category' },
   { name: 'Amount', uid: 'amount' },
   { name: 'Type', uid: 'type' },
+  { name: 'Date', uid: 'date' },
   { name: 'Action', uid: 'actions' },
 ];
 

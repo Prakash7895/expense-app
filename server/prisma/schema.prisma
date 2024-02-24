@@ -53,6 +53,7 @@ model Transaction {
   balance       Float
   categoryId    String          @default(uuid())
   description   String?
+  date          DateTime        @db.Timestamptz(3)
   userId        String          @default(uuid())
   relatedUserId String?         @default(uuid())
   accountId     String?         @default(uuid())

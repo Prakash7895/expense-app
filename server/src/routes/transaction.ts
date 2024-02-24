@@ -47,6 +47,9 @@ const transactionRouter = express.Router();
  *              categoryId:
  *                type: uuid
  *                default: d34e7fd7-dcfa-4925-ad47-e3f04b3d35c8
+ *              date:
+ *                type: Date
+ *                default: 2024-02-06T07:09:03.000Z
  *              description:
  *                type: string
  *                default: This is description
@@ -73,6 +76,8 @@ transactionRouter.post(
       .withMessage("Type must be either 'credit' or 'debit'"),
     body('description').trim().optional(),
     requiredCheck('categoryId', 'Category Id'),
+    requiredCheck('date', 'Date'),
+    body('date').isISO8601(),
     body('categoryId').custom(async (val, { req }) => {
       const categoryExists = await prisma.category.findFirst({
         where: {
@@ -158,7 +163,7 @@ transactionRouter.post(
 transactionRouter.get(
   '/list',
   authCheck(),
-  createQueryValidation(),
+  createQueryValidation(['date']),
   validateResult,
   listTransactions
 );
@@ -200,6 +205,9 @@ transactionRouter.get(
  *              categoryId:
  *                type: uuid
  *                default: d34e7fd7-dcfa-4925-ad47-e3f04b3d35c8
+ *              date:
+ *                type: Date
+ *                default: 2024-02-06T07:09:03.000Z
  *              description:
  *                type: string
  *                default: This is description
@@ -238,6 +246,8 @@ transactionRouter.put(
       .isIn(['credit', 'debit'])
       .withMessage("Type must be either 'credit' or 'debit'"),
     body('description').trim().optional(),
+    requiredCheck('date', 'Date'),
+    body('date').isISO8601(),
     requiredCheck('categoryId', 'Category Id'),
     body('categoryId').custom(async (val, { req }) => {
       const categoryExists = await prisma.category.findFirst({

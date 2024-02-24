@@ -3,8 +3,15 @@ import { prisma } from '../utils';
 
 export const addTransaction = async (req: Request, res: Response) => {
   try {
-    const { amount, type, categoryId, description, relatedUserId, accountId } =
-      req.body;
+    const {
+      amount,
+      type,
+      categoryId,
+      description,
+      relatedUserId,
+      accountId,
+      date,
+    } = req.body;
 
     const sumCredit = await prisma.transaction.aggregate({
       _sum: { amount: true },
@@ -37,6 +44,7 @@ export const addTransaction = async (req: Request, res: Response) => {
         balance: balance,
         relatedUserId: relatedUserId || null,
         accountId: accountId || null,
+        date: date,
       },
     });
 
@@ -113,8 +121,15 @@ export const listTransactions = async (req: Request, res: Response) => {
 
 export const updateTransaction = async (req: Request, res: Response) => {
   try {
-    const { amount, type, categoryId, description, relatedUserId, accountId } =
-      req.body;
+    const {
+      amount,
+      type,
+      categoryId,
+      description,
+      relatedUserId,
+      accountId,
+      date,
+    } = req.body;
 
     const transactionId = req.params.transactionId;
 
@@ -152,6 +167,7 @@ export const updateTransaction = async (req: Request, res: Response) => {
         balance: balance,
         relatedUserId: relatedUserId || null,
         accountId: accountId || null,
+        date: date,
       },
     });
 

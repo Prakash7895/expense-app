@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import CrudComponent from '../components/CrudComponent';
 import TransactionCard from '../components/TransactionCard';
 import { AutocompleteItem } from '@nextui-org/react';
+import { DateTime } from 'luxon';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
@@ -25,17 +26,19 @@ const Transaction = () => {
     refetchOnWindowFocus: false,
   });
 
-  // console.log('DATA', data?.data);
-
   const getDesc = (item: any) => {
-    if (item?.category?.name === 'Rent') {
-      return `Rent ${item.type === 'debit' ? 'to' : 'from'} ${
-        item?.relatedUser?.firstName
-      } ${item?.relatedUser?.lastName}`;
-    } else if (item?.category?.name === 'Borrowed') {
-      return `Borrowed ${item.type === 'debit' ? 'to' : 'from'} ${
-        item?.relatedUser?.firstName
-      } ${item?.relatedUser?.lastName}`;
+    const name = item?.relatedUser
+      ? item?.relatedUser?.firstName
+        ? `${item?.relatedUser?.firstName} ${item?.relatedUser?.lastName}`
+        : item?.relatedUser?.email
+        ? item?.relatedUser?.email
+        : `${item?.relatedUser?.countryCode}-${item?.relatedUser?.phone}`
+      : '';
+
+    if (item?.category?.name === 'Rent' && item?.relatedUser) {
+      return `Rent ${item.type === 'debit' ? 'to' : 'from'} ${name}`;
+    } else if (item?.category?.name === 'Borrowed' && item?.relatedUser) {
+      return `Borrowed ${item.type === 'debit' ? 'to' : 'from'} ${name}`;
     }
     return item?.description;
   };
@@ -44,13 +47,25 @@ const Transaction = () => {
     <AutocompleteItem
       key={item.id}
       textValue={`${
-        item.name ? item.name : item.firstName + ' ' + item.lastName
+        item.name.trim().length
+          ? item.name
+          : item.firstName
+          ? `${item.firstName} ${item.lastName}`
+          : item.email
+          ? item.email
+          : `${item.countryCode}-${item.phone}`
       }`}
     >
       <div className='flex gap-2 items-center'>
         <div className='flex flex-col'>
           <span className='text-small'>{`${
-            item.name ? item.name : item.firstName + ' ' + item.lastName
+            item.name.trim().length
+              ? item.name
+              : item.firstName
+              ? `${item.firstName} ${item.lastName}`
+              : item.email
+              ? item.email
+              : `${item.countryCode}-${item.phone}`
           }`}</span>
           <span className='text-tiny text-default-400'>
             {item.email ? item.email : `${item.countryCode}-${item.phone}`}
@@ -70,18 +85,23 @@ const Transaction = () => {
       crudApi='/api/transaction/'
       formHeader='Add Transaction'
       tableColumns={transactionColumns}
+      defaultSortDescriptor={{
+        column: 'date',
+        direction: 'descending',
+      }}
       columnRenderers={{
         type: (val: string) => val[0].toUpperCase() + val.substring(1),
         category: (val: any, item: any) => {
           return (
             <div className='flex flex-col'>
               <p className='text-bold text-small capitalize'>{val?.name}</p>
-              <p className='text-bold text-tiny capitalize text-default-400'>
+              <p className='text-bold text-tiny text-default-400'>
                 {getDesc(item)}
               </p>
             </div>
           );
         },
+        date: (val) => DateTime.fromISO(val).toFormat('DD, t a'),
       }}
       tableRowClassName={(item) =>
         `border-b-medium ${

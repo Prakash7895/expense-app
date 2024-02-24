@@ -14,7 +14,7 @@ const TransactionCard: FC<TransactionCardProps> = ({
   bodyClassName,
 }) => {
   return (
-    <Card className='py-4 text-foreground-600 w-36 self-stretch'>
+    <Card className='py-4 text-foreground-600 w-40 self-stretch'>
       <CardHeader className='pb-0 pt-2 px-4 flex-col items-start'>
         <p className='text-tiny uppercase font-bold'>{label}</p>
       </CardHeader>

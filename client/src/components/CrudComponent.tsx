@@ -2,7 +2,7 @@ import { FC, Key, ReactNode, useState } from 'react';
 import DynamicForm from './DynamicForm';
 import PageHeader from './PageHeader';
 import { Column, FormFields } from '../utils/types';
-import { Button } from '@nextui-org/react';
+import { Button, SortDescriptor } from '@nextui-org/react';
 import DataTable from './DataTable';
 import Modal from './Modal';
 import axiosInstance from '../utils/axiosInstance';
@@ -29,6 +29,7 @@ interface CrudComponentProps {
   beforeTableComponent?: ReactNode;
   disableEdit?: boolean | ((val: any) => boolean);
   disableDelete?: boolean | ((val: any) => boolean);
+  defaultSortDescriptor?: SortDescriptor;
 }
 
 const CrudComponent: FC<CrudComponentProps> = ({
@@ -50,6 +51,7 @@ const CrudComponent: FC<CrudComponentProps> = ({
   beforeTableComponent,
   disableDelete,
   disableEdit,
+  defaultSortDescriptor,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [refetchNum, setRefetchNum] = useState(0);
@@ -87,6 +89,7 @@ const CrudComponent: FC<CrudComponentProps> = ({
         onSubmitSuccess && onSubmitSuccess();
       })
       .catch((error) => {
+        setIsSubmitting(false);
         toast.error(
           <div>
             {error?.response?.data?.errors?.map((el: any) => (
@@ -210,6 +213,7 @@ const CrudComponent: FC<CrudComponentProps> = ({
             ? ['delete']
             : []),
         ]}
+        defaultSortDescriptor={defaultSortDescriptor}
       />
       <Modal
         isOpen={isModalOpen}

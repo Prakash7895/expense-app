@@ -12,6 +12,7 @@ import {
 import { SelectItem, Textarea } from '@nextui-org/react';
 import Select from './Select';
 import AutoComplete from './AutoComplete';
+import DateSelector from './DateSelector';
 
 interface FormElementsProps {
   control: Control<
@@ -50,6 +51,7 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
   initialValues,
   autoCompleteItem,
   fetchData,
+  matchOptionHandler,
 }) => {
   const {
     field,
@@ -117,8 +119,12 @@ const FormElements: FC<FormElementsProps & FormFields> = ({
           initialValues={initialValues}
           autoCompleteItem={autoCompleteItem}
           fetchData={fetchData}
+          matchOptionHandler={matchOptionHandler}
         />
       );
+
+    case 'datepicker':
+      return <DateSelector {...field} />;
 
     default:
       return (

@@ -16,7 +16,13 @@ export type ColorScheme = Mode | 'system';
 
 export interface FormFields<T extends string = any> {
   name: string;
-  type: 'text' | 'select' | 'password' | 'textarea' | 'autocomplete';
+  type:
+    | 'text'
+    | 'select'
+    | 'password'
+    | 'textarea'
+    | 'autocomplete'
+    | 'datepicker';
   className?: string;
   label: string;
   isDisabled?: boolean;
@@ -37,6 +43,7 @@ export interface FormFields<T extends string = any> {
   showCountryCode?: boolean;
   autoCompleteItem?: (item: any) => ReactNode;
   fetchData?: (value: readonly string[]) => Promise<any>;
+  matchOptionHandler?: (value: string, data: any[]) => any;
 }
 
 export interface Column {

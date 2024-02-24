@@ -43,6 +43,7 @@ interface DataTableProps {
   actionItems?: DropdownMenuItem[];
   onRowAction?: (key: Key, item: any) => void;
   dropdownDisabledeys?: string[] | ((val: any) => string[]);
+  defaultSortDescriptor?: SortDescriptor;
 }
 
 const DataTable: FC<DataTableProps> = ({
@@ -55,12 +56,13 @@ const DataTable: FC<DataTableProps> = ({
   tableRowClassName,
   onRowAction,
   dropdownDisabledeys,
+  defaultSortDescriptor,
 }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: 'createdAt',
-    direction: 'descending',
+    column: defaultSortDescriptor?.column || 'createdAt',
+    direction: defaultSortDescriptor?.direction || 'descending',
   });
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -103,11 +105,12 @@ const DataTable: FC<DataTableProps> = ({
     }
   }, [isError, error]);
 
-  useEffect(() => {
-    if (data?.total) {
-      setTotalPages(Math.ceil(data?.total / rowsPerPage));
+  if (data?.total) {
+    const tPages = Math.ceil(data?.total / rowsPerPage);
+    if (totalPages !== tPages) {
+      setTotalPages(tPages);
     }
-  }, [data?.total]);
+  }
 
   const renderCell = useCallback((item: any, columnKey: string) => {
     const fields = columnKey.toString().split('.');

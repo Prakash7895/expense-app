@@ -97,6 +97,7 @@ export const addTransaction = (
               .map((el) => ({ label: el.name, value: el.id }))
           : [],
     },
+    { label: 'Date', name: 'date', type: 'datepicker' },
     { label: 'Description', name: 'description', type: 'text' },
     {
       label: 'User',
@@ -109,6 +110,16 @@ export const addTransaction = (
             queryKey[1] ? '&name=' + queryKey[1] : ''
           }`
         ),
+      matchOptionHandler: (value, data) => {
+        return data?.find((v) =>
+          [
+            v?.name,
+            `${v?.firstName ?? ''} ${v?.lastName ?? ''}`.trim(),
+            v?.email,
+            ...(v?.phone ? [`${v?.countryCode}-${v?.phone}`] : []),
+          ].includes(value)
+        );
+      },
     },
   ] as FormFields[];
 

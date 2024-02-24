@@ -663,7 +663,7 @@ export const listRelations = async (req: Request, res: Response) => {
       success: true,
       data: relations.map((el) => ({
         id: el.id,
-        name: el.relatedUserName,
+        name: el.relatedUserName?.trim(),
         email: el.relatedUserEmail,
         phone: el.relatedUserPhone,
         countryCode: el.relatedUserCountryCode,

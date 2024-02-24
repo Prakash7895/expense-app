@@ -57,7 +57,12 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   const defaultValues = fields.reduce((acc, field) => {
     return {
       ...acc,
-      [field.name]: initialValues?.[field.name] ?? field.defaultValue ?? '',
+      [field.name]:
+        initialValues?.[field.name] ??
+        (field.type === 'datepicker' && !field.defaultValue
+          ? new Date().toISOString()
+          : field.defaultValue) ??
+        '',
     };
   }, {});
 
