@@ -2,6 +2,7 @@ import { InputSlots } from '@nextui-org/react';
 import { Category, FormFields } from './types';
 import { ReactNode } from 'react';
 import axiosInstance from './axiosInstance';
+import { currencies } from './constants';
 
 export const loginFormFields: FormFields[] = [
   {
@@ -159,3 +160,33 @@ export const inviteFormFields: FormFields = {
   type: 'text',
   showCountryCode: true,
 };
+
+export const nameFormFields: FormFields[] = [
+  {
+    label: 'First Name',
+    name: 'firstName',
+    type: 'text',
+  },
+  {
+    label: 'LastName',
+    name: 'lastName',
+    type: 'text',
+  },
+];
+
+export const currencyFormFields: FormFields[] = [
+  {
+    label: 'Currency',
+    name: 'currency',
+    type: 'select',
+    options: currencies.map((el) => ({
+      value: el.code,
+      label: `${el.country} (${el.code})`,
+    })),
+  },
+];
+
+export const passwordFormFields: FormFields[] = [
+  { label: 'Password', name: 'password', type: 'password' },
+  { label: 'Confirm Password', name: 'confirmPassword', type: 'password' },
+];

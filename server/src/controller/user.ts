@@ -32,6 +32,7 @@ export const userSignUp = async (req: Request, res: Response) => {
         phone,
         password: hash,
         countryCode: countryCode ?? null,
+        currency: 'USD',
       },
     });
 
@@ -670,6 +671,97 @@ export const listRelations = async (req: Request, res: Response) => {
         createdAt: el.createdAt,
       })),
       total: Number(total?.[0].count ?? 0),
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const getUserProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        countryCode: true,
+        currency: true,
+        email: true,
+        firstName: true,
+        imageUrl: true,
+        lastName: true,
+        phone: true,
+      },
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: user,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+    const { firstName, lastName, password, currency, imageUrl } = req.body;
+
+    const userId = req.user.id;
+
+    let hash;
+    if (password) {
+      hash = cryptPassword(password);
+    }
+
+    let dataToUpdate = {
+      firstName,
+      lastName,
+      password: hash,
+      currency: currency,
+      imageUrl: imageUrl,
+    };
+
+    dataToUpdate = Object.keys(dataToUpdate).reduce((acc, key) => {
+      const val = dataToUpdate[key as keyof typeof dataToUpdate];
+      if (val) {
+        return {
+          ...acc,
+          [key]: val,
+        };
+      }
+      return acc;
+    }, {} as typeof dataToUpdate);
+
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: dataToUpdate,
+    });
+
+    if (firstName || lastName) {
+      await subscribeToNovu({
+        id: user.id,
+        email: user.email!,
+        phone: user.phone ? `${user.countryCode}${user.phone}` : '',
+        firstName,
+        lastName,
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Profile data updated successfully.',
+      data: user,
     });
   } catch (err: any) {
     res.status(400).json({

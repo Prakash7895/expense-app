@@ -9,6 +9,9 @@ export interface User {
   lastName: string;
   email: string;
   phone: string;
+  countryCode: string;
+  currency: string;
+  imageUrl: string;
 }
 
 export type Mode = 'dark' | 'light';

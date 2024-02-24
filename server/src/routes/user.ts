@@ -1,16 +1,19 @@
 import express from 'express';
 import {
+  getUserProfile,
   inviteUser,
   listRelations,
   resendOTP,
   resetPassword,
   sendOTP,
+  updateUserProfile,
   userLogin,
   userSignUp,
   verifyOTP,
 } from '../controller/user';
 import { body } from 'express-validator';
 import {
+  alphaCheck,
   authCheck,
   checkCountryCode,
   checkEitherEmailOrPhone,
@@ -23,6 +26,7 @@ import {
   routeMethodCheck,
   validateResult,
 } from '../utils';
+import { currencies } from '../utils/constants';
 
 const userRouter = express.Router();
 
@@ -137,9 +141,7 @@ userRouter.use(
  *      201:
  *        description: Created
  */
-userRouter.get('/profile', (req, res) => {
-  res.json({ success: true, data: req.user });
-});
+userRouter.get('/profile', getUserProfile);
 
 /**
  * @openapi
@@ -391,6 +393,53 @@ userRouter.get(
   createQueryValidation(['name']),
   validateResult,
   listRelations
+);
+
+/**
+ * @openapi
+ * '/api/user/update-profile':
+ *  patch:
+ *     tags:
+ *     - User Controller
+ *     summary: Update user's profile data
+ *     consumes:
+ *      - application/json
+ *     parameters:
+ *      - in: body
+ *        name: user
+ *        description: The user's data to udpate.
+ *        schema:
+ *         type: object
+ *         properties:
+ *          firstName:
+ *           type: string
+ *          lastName:
+ *           type: string
+ *          password:
+ *           type: string
+ *          currency:
+ *           type: string
+ *          imageUrl:
+ *           type: string
+ *     responses:
+ *      201:
+ *        description: Created
+ */
+userRouter.patch(
+  '/update-profile',
+  [
+    body('firstName').optional(),
+    alphaCheck('firstName'),
+    body('lastName').optional(),
+    alphaCheck('lastName'),
+    checkPassword('password', 'Password').optional(),
+    body('currency')
+      .optional()
+      .isIn(currencies.map((el) => el.code)),
+    body('imageUrl').optional(),
+  ],
+  validateResult,
+  updateUserProfile
 );
 
 export default userRouter;

@@ -15,6 +15,7 @@ const Transaction = lazyWithPreload(() => import('./pages/Transaction'));
 const Account = lazyWithPreload(() => import('./pages/Account'));
 const Category = lazyWithPreload(() => import('./pages/Category'));
 const Relations = lazyWithPreload(() => import('./pages/Relations'));
+const Profile = lazyWithPreload(() => import('./pages/Profile'));
 const PrivateRoutes = lazyWithPreload(
   () => import('./components/PrivateRoutes')
 );
@@ -70,7 +71,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <PrivateRoutes />,
-    children: [...sidebar],
+    children: [...sidebar, { path: '/profile', element: <Profile /> }],
   },
 ]);
 

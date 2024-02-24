@@ -66,11 +66,14 @@ export const requiredCheck = (field: string, label?: string) =>
     .notEmpty()
     .withMessage(`${label ? label : field} is required.`);
 
-export const emptyAndRequiredCheckInBody = (field: string, label?: string) =>
+export const alphaCheck = (field: string, label?: string) =>
   body(field)
     .trim()
     .custom((val) => /^[a-zA-Z ]*$/.test(val))
-    .withMessage(`${label ? label : field} must contain only alphabets.`)
+    .withMessage(`${label ? label : field} must contain only alphabets.`);
+
+export const emptyAndRequiredCheckInBody = (field: string, label?: string) =>
+  alphaCheck(field, label)
     .notEmpty()
     .withMessage(`${label ? label : field} is required.`)
     .escape();

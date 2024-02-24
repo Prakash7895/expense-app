@@ -23,6 +23,8 @@ model User {
   countryCode            String?
   phone                  String?       @unique
   password               String?
+  imageUrl               String?
+  currency               String?
   createdAt              DateTime      @default(now()) @db.Timestamptz(3)
   updatedAt              DateTime      @updatedAt @db.Timestamptz(3)
   Account                Account[]

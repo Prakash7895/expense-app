@@ -85,8 +85,18 @@ export const loginSchema = yup.object({
 });
 
 export const signupSchema = yup.object({
-  firstName: yup.string().required('First Name is required.'),
-  lastName: yup.string().required('Last Name is required.'),
+  firstName: yup
+    .string()
+    .required('First Name is required.')
+    .test('alpha-check', 'Name should contain only alphabet', (value) => {
+      return /^[a-zA-Z ]*$/.test(value);
+    }),
+  lastName: yup
+    .string()
+    .required('Last Name is required.')
+    .test('alpha-check', 'Name should contain only alphabet', (value) => {
+      return /^[a-zA-Z ]*$/.test(value);
+    }),
   emailOrPhone: emailOrPhoneSchema,
   password: passwordSchema,
   confirmPassword: yup
@@ -155,4 +165,40 @@ export const addAccountSchema = yup.object({
 
 export const inviteSchema = yup.object({
   emailOrPhone: yup.array().of(emailOrPhoneSchema),
+});
+
+export const nameSchema = yup.object({
+  firstName: yup
+    .string()
+    .required('First Name is required.')
+    .test('alpha-check', 'Name should contain only alphabet', (value) => {
+      return /^[a-zA-Z ]*$/.test(value);
+    }),
+  lastName: yup
+    .string()
+    .required('Last Name is required.')
+    .test('alpha-check', 'Name should contain only alphabet', (value) => {
+      return /^[a-zA-Z ]*$/.test(value);
+    }),
+});
+
+export const passSchema = yup.object({
+  password: passwordSchema,
+  confirmPassword: yup
+    .string()
+    .required('Confirm Password is required.')
+    .test(
+      'confirmPasswordCheck',
+      'Password and Confirm Password do not match.',
+      (val, context) => {
+        if (val && val !== context.parent.password) {
+          return false;
+        }
+        return true;
+      }
+    ),
+});
+
+export const currencySchema = yup.object({
+  currency: yup.string().required('Currency is required.'),
 });

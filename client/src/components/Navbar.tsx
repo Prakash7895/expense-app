@@ -29,6 +29,7 @@ import {
   setColorScheme,
   setShowSidebar,
 } from '../utils/store/settingSlice';
+import userIcon from '../assets/user.svg';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -167,7 +168,10 @@ const Navbar = () => {
                 className='transition-transform'
                 name='Jason Hughes'
                 size='sm'
-                src='https://i.pravatar.cc/150?u=a042581f4e29026704d'
+                src={userIcon}
+                classNames={{
+                  base: 'bg-transparent',
+                }}
               />
             </DropdownTrigger>
           </Skeleton>
@@ -176,13 +180,22 @@ const Navbar = () => {
             <DropdownItem key='profile' className='h-14 gap-2'>
               <p className='font-semibold'>Signed in as</p>
               <p className='font-semibold'>
-                {user?.firstName
+                {(user?.firstName
                   ? `${user?.firstName} ${user?.lastName}`
-                  : user?.email ?? user?.phone ?? 'N/A'}
+                  : user?.email) ||
+                  (user?.phone ? `${user?.countryCode}-${user?.phone}` : '') ||
+                  'N/A'}
               </p>
             </DropdownItem>
+            <DropdownItem
+              key='profile'
+              onClick={() => {
+                navigate('/profile');
+              }}
+            >
+              Profile
+            </DropdownItem>
             {/* <DropdownItem key='settings'>My Settings</DropdownItem>
-            <DropdownItem key='team_settings'>Team Settings</DropdownItem>
             <DropdownItem key='analytics'>Analytics</DropdownItem>
             <DropdownItem key='system'>System</DropdownItem>
             <DropdownItem key='configurations'>Configurations</DropdownItem>

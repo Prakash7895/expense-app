@@ -1200,3 +1200,26 @@ export const countries = [
     code: 'ZW',
   },
 ];
+
+export const currencies = [
+  { country: 'United States', code: 'USD', symbol: '$', countryCode: 'US' },
+  { country: 'Eurozone', code: 'EUR', symbol: '€', countryCode: 'EU' },
+  { country: 'United Kingdom', code: 'GBP', symbol: '£', countryCode: 'GB' },
+  { country: 'Japan', code: 'JPY', symbol: '¥', countryCode: 'JP' },
+  { country: 'Switzerland', code: 'CHF', symbol: 'Fr', countryCode: 'CH' },
+  { country: 'Canada', code: 'CAD', symbol: '$', countryCode: 'CA' },
+  { country: 'Australia', code: 'AUD', symbol: '$', countryCode: 'AU' },
+  { country: 'New Zealand', code: 'NZD', symbol: '$', countryCode: 'NZ' },
+  { country: 'China', code: 'CNY', symbol: '¥', countryCode: 'CN' },
+  { country: 'India', code: 'INR', symbol: '₹', countryCode: 'IN' },
+  { country: 'Brazil', code: 'BRL', symbol: 'R$', countryCode: 'BR' },
+  { country: 'Russia', code: 'RUB', symbol: '₽', countryCode: 'RU' },
+  { country: 'South Korea', code: 'KRW', symbol: '₩', countryCode: 'KR' },
+  { country: 'South Africa', code: 'ZAR', symbol: 'R', countryCode: 'ZA' },
+  { country: 'Mexico', code: 'MXN', symbol: '$', countryCode: 'MX' },
+  { country: 'Singapore', code: 'SGD', symbol: '$', countryCode: 'SG' },
+  { country: 'Hong Kong', code: 'HKD', symbol: '$', countryCode: 'HK' },
+  { country: 'Turkey', code: 'TRY', symbol: '₺', countryCode: 'TR' },
+  { country: 'Sweden', code: 'SEK', symbol: 'kr', countryCode: 'SE' },
+  { country: 'Norway', code: 'NOK', symbol: 'kr', countryCode: 'NO' },
+];
