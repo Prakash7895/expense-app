@@ -18,8 +18,8 @@ const FAB: FC<IFAB> = ({ actionItems }) => {
     <>
       <div
         onClick={() => setRotate(false)}
-        className={`opacity-30 bg-default-400 origin absolute transition-all rounded-full bottom-5 z-50 right-5 h-12 w-12 ${
-          rotate ? 'h-[6000px] w-[6000px] -right-[1000px] -bottom-[900px]' : ''
+        className={`bg-gradient-to-br from-gray-400 from-0% via-gray-700 via-60% to-gray-900 to-100% opacity-80 origin absolute transition-all duration-1000 rounded-full bottom-5 z-50 right-5 h-12 w-12 ${
+          rotate ? 'h-[6000px] w-[6000px] -right-[1000px] -bottom-[1300px]' : ''
         }`}
       ></div>
       <div

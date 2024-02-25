@@ -44,6 +44,8 @@ interface DataTableProps {
   onRowAction?: (key: Key, item: any) => void;
   dropdownDisabledeys?: string[] | ((val: any) => string[]);
   defaultSortDescriptor?: SortDescriptor;
+  customTopContent?: ReactNode;
+  showBottomContent?: boolean;
 }
 
 const DataTable: FC<DataTableProps> = ({
@@ -57,6 +59,8 @@ const DataTable: FC<DataTableProps> = ({
   onRowAction,
   dropdownDisabledeys,
   defaultSortDescriptor,
+  customTopContent = null,
+  showBottomContent = true,
 }) => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -271,8 +275,8 @@ const DataTable: FC<DataTableProps> = ({
     <Table
       aria-label='Example table with custom cells, pagination and sorting'
       // isHeaderSticky
-      bottomContent={bottomContent}
-      topContent={topContent}
+      bottomContent={showBottomContent ? bottomContent : null}
+      topContent={customTopContent ?? topContent}
       bottomContentPlacement='outside'
       classNames={{
         wrapper: 'max-h-[400px]',

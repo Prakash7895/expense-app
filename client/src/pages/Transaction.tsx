@@ -10,6 +10,7 @@ import TransactionCard from '../components/TransactionCard';
 import { AutocompleteItem } from '@nextui-org/react';
 import { DateTime } from 'luxon';
 import useCurrency from '../hooks/useCurrency';
+import { getTransactionDescription } from '../utils';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
@@ -28,23 +29,6 @@ const Transaction = () => {
     },
     refetchOnWindowFocus: false,
   });
-
-  const getDesc = (item: any) => {
-    const name = item?.relatedUser
-      ? item?.relatedUser?.firstName
-        ? `${item?.relatedUser?.firstName} ${item?.relatedUser?.lastName}`
-        : item?.relatedUser?.email
-        ? item?.relatedUser?.email
-        : `${item?.relatedUser?.countryCode}-${item?.relatedUser?.phone}`
-      : '';
-
-    if (item?.category?.name === 'Rent' && item?.relatedUser) {
-      return `Rent ${item.type === 'debit' ? 'to' : 'from'} ${name}`;
-    } else if (item?.category?.name === 'Borrowed' && item?.relatedUser) {
-      return `Borrowed ${item.type === 'debit' ? 'to' : 'from'} ${name}`;
-    }
-    return item?.description;
-  };
 
   const renderOption = (item: any) => (
     <AutocompleteItem
@@ -99,12 +83,13 @@ const Transaction = () => {
             <div className='flex flex-col'>
               <p className='text-bold text-small capitalize'>{val?.name}</p>
               <p className='text-bold text-tiny text-default-400'>
-                {getDesc(item)}
+                {getTransactionDescription(item)}
               </p>
             </div>
           );
         },
         date: (val) => DateTime.fromISO(val).toFormat('DD, t a'),
+        amount: (val) => `${currency?.symbol}${val}`,
       }}
       tableRowClassName={(item) =>
         `border-b-medium ${

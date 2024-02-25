@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import DonutChart from './DonutChart';
 import { useAppSelector } from '../utils/types';
 import { getCategory } from '../utils/store/categorySlice';
@@ -9,7 +9,11 @@ import { SelectItem } from '@nextui-org/react';
 import { DateTime } from 'luxon';
 import { months } from '../utils/constants';
 
-const PieByCategory = () => {
+interface IPieByCategory {
+  refetch?: number;
+}
+
+const PieByCategory: FC<IPieByCategory> = ({ refetch }) => {
   const categories = useAppSelector(getCategory);
   const [data, setData] = useState([]);
   const [sum, setSum] = useState(0);
@@ -41,7 +45,7 @@ const PieByCategory = () => {
           setData(arr || []);
         });
     }
-  }, [categories, date]);
+  }, [categories, date, refetch]);
 
   const year = DateTime.now().startOf('year').get('year');
 

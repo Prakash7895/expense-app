@@ -12,7 +12,7 @@ import { useAppDispatch } from './utils/types';
 import lazyWithPreload from './lazyWithPreload';
 const Home = lazyWithPreload(() => import('./pages/Home'));
 const Transaction = lazyWithPreload(() => import('./pages/Transaction'));
-const Account = lazyWithPreload(() => import('./pages/Account'));
+// const Account = lazyWithPreload(() => import('./pages/Account'));
 const Category = lazyWithPreload(() => import('./pages/Category'));
 const Relations = lazyWithPreload(() => import('./pages/Relations'));
 const Profile = lazyWithPreload(() => import('./pages/Profile'));
@@ -42,14 +42,14 @@ export const sidebar = [
       Transaction.preload();
     },
   },
-  {
-    path: '/account',
-    label: 'Account',
-    element: <Account />,
-    onMouseOver: () => {
-      Account.preload();
-    },
-  },
+  // {
+  //   path: '/account',
+  //   label: 'Account',
+  //   element: <Account />,
+  //   onMouseOver: () => {
+  //     Account.preload();
+  //   },
+  // },
   {
     path: '/category',
     label: 'Category',
@@ -109,7 +109,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <NextUIProvider
-        className={`h-screen flex flex-col ${mode} text-foreground-600 bg-background`}
+        className={`h-screen flex flex-col ${mode} text-foreground-600 bg-background overflow-hidden`}
       >
         <RouterProvider router={router} />
         <ToastContainer

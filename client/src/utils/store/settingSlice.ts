@@ -8,7 +8,7 @@ const initialState: {
   showSidebar: boolean;
 } = {
   mode: 'light',
-  colorScheme: localStorage.getItem('colorScheme') as ColorScheme,
+  colorScheme: (localStorage.getItem('colorScheme') as ColorScheme) || 'light',
   showSidebar: false,
 };
 
