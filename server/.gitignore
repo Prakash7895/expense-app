@@ -2,4 +2,4 @@
 .env
 /dist
 prisma/migrations/
-uploads/
+# uploads/

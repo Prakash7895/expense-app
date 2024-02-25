@@ -9,9 +9,14 @@ import CrudComponent from '../components/CrudComponent';
 import TransactionCard from '../components/TransactionCard';
 import { AutocompleteItem } from '@nextui-org/react';
 import { DateTime } from 'luxon';
+import { getUser } from '../utils/store/userSlice';
+import { currencies } from '../utils/constants';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
+  const user = useAppSelector(getUser);
+
+  const currency = currencies.find((el) => el.code === user?.currency);
 
   const { data, refetch } = useQuery<{
     success: boolean;
@@ -120,19 +125,23 @@ const Transaction = () => {
         <div className='my-5 flex gap-4 items-center'>
           <TransactionCard
             label='Total Earnings'
-            body={`$${data?.data?.totalCredit._sum.amount ?? 0}`}
+            body={`${currency?.symbol}${
+              data?.data?.totalCredit._sum.amount ?? 0
+            }`}
             bodyClassName='text-success'
           />
           <h4 className='font-bold text-large'>-</h4>
           <TransactionCard
             label='Total Expenses'
-            body={`$${data?.data?.totalDebit._sum.amount ?? 0}`}
+            body={`${currency?.symbol}${
+              data?.data?.totalDebit._sum.amount ?? 0
+            }`}
             bodyClassName='text-danger'
           />
           <h4 className='font-bold text-large'>=</h4>
           <TransactionCard
             label='Current Balance'
-            body={`$${
+            body={`${currency?.symbol}${
               (data?.data?.totalCredit._sum.amount || 0) -
               (data?.data?.totalDebit._sum.amount || 0)
             }`}
