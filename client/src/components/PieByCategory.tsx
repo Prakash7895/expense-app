@@ -20,8 +20,6 @@ const PieByCategory = () => {
 
   const currency = useCurrency();
 
-  console.log('date111', date);
-
   useEffect(() => {
     if (categories.length) {
       axiosInstance

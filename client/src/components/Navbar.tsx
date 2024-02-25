@@ -30,6 +30,7 @@ import {
   setShowSidebar,
 } from '../utils/store/settingSlice';
 import userIcon from '../assets/user.svg';
+import { appName } from '../utils/constants';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -89,9 +90,7 @@ const Navbar = () => {
       </Button>
       <NavbarBrand>
         <Skeleton isLoaded={!!user} className='md:w-3/5 rounded-lg'>
-          <p className='font-bold text-inherit'>
-            {user?.firstName + ' ' + user?.lastName}
-          </p>
+          <p className='font-bold text-inherit'>{appName}</p>
         </Skeleton>
       </NavbarBrand>
 

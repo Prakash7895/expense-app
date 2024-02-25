@@ -7,6 +7,9 @@ import { useState } from 'react';
 import { errorToast } from '../utils';
 import { toast } from 'react-toastify';
 import PieByCategory from '../components/PieByCategory';
+import FAB from '../components/FAB';
+import { MdOutlineMarkEmailRead } from 'react-icons/md';
+import { GiWallet } from 'react-icons/gi';
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -58,19 +61,28 @@ const Home = () => {
     return arr;
   };
 
+  const actionItems = [
+    {
+      icon: <GiWallet size={25} />,
+      label: 'Add Transaction',
+      description: 'Add new transaction.',
+      action: () => {
+        console.log('add transaction');
+      },
+    },
+    {
+      icon: <MdOutlineMarkEmailRead size={25} />,
+      label: 'Invite User',
+      description: 'Link them when borrowing or paying rent.',
+      action: () => {
+        setCount(0);
+        setVisible(true);
+      },
+    },
+  ];
+
   return (
     <div className='mt-4'>
-      {/* <div>
-        <Button
-          variant='shadow'
-          onClick={() => {
-            setCount(0);
-            setVisible(true);
-          }}
-        >
-          Invite
-        </Button>
-      </div> */}
       <PieByCategory />
 
       {visible && (
@@ -101,6 +113,7 @@ const Home = () => {
           buttonWrapperClassName='justify-start items-center flex-row-reverse gap-3'
         />
       )}
+      <FAB actionItems={actionItems} />
     </div>
   );
 };

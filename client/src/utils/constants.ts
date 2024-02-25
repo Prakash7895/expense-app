@@ -1238,3 +1238,5 @@ export const months = [
   { label: 'November', value: '/11/01' },
   { label: 'December', value: '/12/01' },
 ];
+
+export const appName = 'ExpenseEase';
