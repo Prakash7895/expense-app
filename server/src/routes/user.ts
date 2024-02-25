@@ -30,6 +30,7 @@ import {
 import { currencies } from '../utils/constants';
 import multer from 'multer';
 import path from 'path';
+import { unlink } from 'fs/promises';
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -504,6 +505,17 @@ userRouter.post('/profile-image', async (req: Request, res: Response) => {
     } else {
       const file = req.file;
       const path = file?.path;
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: req.user.id,
+        },
+      });
+
+      if (user?.imageUrl) {
+        await unlink(user.imageUrl);
+      }
+
       await prisma.user.update({
         where: {
           id: req.user.id,
