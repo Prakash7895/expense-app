@@ -23,7 +23,11 @@ const PrivateRoutes = lazyWithPreload(
 const Login = lazyWithPreload(() => import('./pages/Login'));
 const Signup = lazyWithPreload(() => import('./pages/Signup'));
 const ForgotPassword = lazyWithPreload(() => import('./pages/ForgotPassword'));
+const DynamicForm = lazyWithPreload(() => import('./components/DynamicForm'));
+const Input = lazyWithPreload(() => import('./components/Input'));
 
+Input.preload();
+DynamicForm.preload();
 Login.preload();
 Signup.preload();
 ForgotPassword.preload();
