@@ -16,6 +16,7 @@ import { currencySchema, nameSchema, passSchema } from '../utils/validations';
 import axiosInstance from '../utils/axiosInstance';
 import { toast } from 'react-toastify';
 import { errorToast } from '../utils';
+import Modal from '../components/Modal';
 
 const Profile = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -26,6 +27,7 @@ const Profile = () => {
   >(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -39,9 +41,11 @@ const Profile = () => {
       };
       fr.readAsDataURL(file);
     } else if (!file) {
-      imageRef.current!.src = userIcon;
+      imageRef.current!.src = user?.imageUrl
+        ? `${import.meta.env.VITE_BASE_URL}/${user?.imageUrl}`
+        : userIcon;
     }
-  }, [file]);
+  }, [file, user]);
 
   const currency = currencies.find(
     (el) => el.code === (user?.currency ?? 'USD')
@@ -70,7 +74,6 @@ const Profile = () => {
     axiosInstance
       .patch('/api/user/update-profile', dataToSend)
       .then((response) => {
-        console.log(response.data);
         toast.success(response.data?.message);
         setFormType(null);
         setSelectedItem({});
@@ -79,6 +82,43 @@ const Profile = () => {
       })
       .catch((error) => {
         setIsSubmitting(false);
+        errorToast(error);
+      });
+  };
+
+  const uploadFile = (f: File) => {
+    setFile(f);
+    axiosInstance
+      .post(
+        '/api/user/profile-image',
+        {
+          imageUrl: f,
+        },
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      .then((response) => {
+        toast.success(response.data?.message);
+        fetchUserData();
+      })
+      .catch((error) => {
+        errorToast(error);
+      });
+  };
+
+  const deleteFile = () => {
+    axiosInstance
+      .delete('/api/user/profile-image')
+      .then((response) => {
+        toast.success(response.data?.message);
+        setFile(undefined);
+        setIsModalOpen(false);
+        fetchUserData();
+      })
+      .catch((error) => {
         errorToast(error);
       });
   };
@@ -95,11 +135,13 @@ const Profile = () => {
                 inputRef.current?.click();
               }}
             />
-            <MdDelete
-              size={28}
-              className='absolute cursor-pointer text-danger-700 top-3 right-3'
-              onClick={() => setFile(undefined)}
-            />
+            {user?.imageUrl && (
+              <MdDelete
+                size={28}
+                className='absolute cursor-pointer text-danger-700 top-3 right-3'
+                onClick={() => setIsModalOpen(true)}
+              />
+            )}
           </div>
           <Image
             ref={imageRef}
@@ -108,16 +150,20 @@ const Profile = () => {
             }}
             alt='NextUI hero Image with delay'
             className={`w-full transition-all border-2 border-default-200 h-full opacity-100 ${
-              file ? 'object-cover' : ''
+              file || user?.imageUrl ? 'object-cover' : ''
             }`}
-            src={userIcon}
+            src={
+              user?.imageUrl
+                ? `${import.meta.env.VITE_BASE_URL}/${user?.imageUrl}`
+                : userIcon
+            }
           />
 
           <input
             type='file'
             ref={inputRef}
             className='hidden'
-            onChange={(t) => setFile(t.target.files?.[0])}
+            onChange={(t) => uploadFile(t.target.files?.[0]!)}
           />
         </div>
         <div className='border-2 border-default-200 rounded-md flex-1 p-3'>
@@ -220,6 +266,16 @@ const Profile = () => {
           submitButtonLabel='Update'
         />
       )}
+      <Modal
+        isOpen={isModalOpen}
+        handleClose={() => {
+          setIsModalOpen(false);
+        }}
+        header='Confirm'
+        confirmBtnAction={deleteFile}
+        confirmBtnLabel='Yes'
+        body='Are you sure you want to delete this item?'
+      />
     </div>
   );
 };

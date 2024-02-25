@@ -168,7 +168,11 @@ const Navbar = () => {
                 className='transition-transform'
                 name='Jason Hughes'
                 size='sm'
-                src={userIcon}
+                src={
+                  user?.imageUrl
+                    ? `${import.meta.env.VITE_BASE_URL}/${user?.imageUrl}`
+                    : userIcon
+                }
                 classNames={{
                   base: 'bg-transparent',
                 }}

@@ -1,5 +1,6 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import {
+  deleteUserProfile,
   getUserProfile,
   inviteUser,
   listRelations,
@@ -27,6 +28,40 @@ import {
   validateResult,
 } from '../utils';
 import { currencies } from '../utils/constants';
+import multer from 'multer';
+import path from 'path';
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads');
+  },
+  filename(req, file, callback) {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const fileName = file.originalname.split(ext)[0] + '-' + Date.now() + ext;
+    callback(null, fileName);
+  },
+});
+
+const uploadImageUrl = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    var filetypes = /jpeg|jpg|png/;
+    var mimetype = filetypes.test(file.mimetype);
+
+    var extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb({
+      message: 'Please upload a valid image file.',
+      name: 'invalid file type',
+    });
+  },
+}).single('imageUrl');
 
 const userRouter = express.Router();
 
@@ -419,8 +454,6 @@ userRouter.get(
  *           type: string
  *          currency:
  *           type: string
- *          imageUrl:
- *           type: string
  *     responses:
  *      201:
  *        description: Created
@@ -436,10 +469,69 @@ userRouter.patch(
     body('currency')
       .optional()
       .isIn(currencies.map((el) => el.code)),
-    body('imageUrl').optional(),
   ],
   validateResult,
   updateUserProfile
 );
+
+/**
+ * @openapi
+ * '/api/user/profile-image':
+ *  post:
+ *     tags:
+ *     - User Controller
+ *     summary: Update user's profile image
+ *     requestBody:
+ *      content:
+ *       multipart/form-data:
+ *        schema:
+ *         type: object
+ *         properties:
+ *          imageUrl:
+ *           type: string
+ *           format: binary
+ *     responses:
+ *      201:
+ *        description: Created
+ */
+userRouter.post('/profile-image', async (req: Request, res: Response) => {
+  uploadImageUrl(req, res, async function (err) {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: err?.message,
+      });
+    } else {
+      const file = req.file;
+      const path = file?.path;
+      await prisma.user.update({
+        where: {
+          id: req.user.id,
+        },
+        data: {
+          imageUrl: path,
+        },
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Image uploaded successfully.',
+      });
+    }
+  });
+});
+
+/**
+ * @openapi
+ * '/api/user/profile-image':
+ *  delete:
+ *     tags:
+ *     - User Controller
+ *     summary: Delete user's profile image
+ *     responses:
+ *      201:
+ *        description: Created
+ */
+userRouter.delete('/profile-image', deleteUserProfile);
 
 export default userRouter;

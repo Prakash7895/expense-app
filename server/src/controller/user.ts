@@ -13,6 +13,7 @@ import {
 import validator from 'validator';
 import { generate as OtpGenerator } from 'otp-generator';
 import { Prisma } from '@prisma/client';
+import { unlink } from 'fs/promises';
 
 export const userSignUp = async (req: Request, res: Response) => {
   try {
@@ -713,7 +714,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
 
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const { firstName, lastName, password, currency, imageUrl } = req.body;
+    const { firstName, lastName, password, currency } = req.body;
 
     const userId = req.user.id;
 
@@ -727,7 +728,6 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       lastName,
       password: hash,
       currency: currency,
-      imageUrl: imageUrl,
     };
 
     dataToUpdate = Object.keys(dataToUpdate).reduce((acc, key) => {
@@ -741,26 +741,67 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       return acc;
     }, {} as typeof dataToUpdate);
 
-    const user = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: dataToUpdate,
-    });
+    let user;
+
+    if (Object.keys(dataToUpdate).length) {
+      user = await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: dataToUpdate,
+      });
+    }
 
     if (firstName || lastName) {
-      await subscribeToNovu({
-        id: user.id,
-        email: user.email!,
-        phone: user.phone ? `${user.countryCode}${user.phone}` : '',
-        firstName,
-        lastName,
-      });
+      user &&
+        (await subscribeToNovu({
+          id: user.id,
+          email: user.email!,
+          phone: user.phone ? `${user.countryCode}${user.phone}` : '',
+          firstName,
+          lastName,
+        }));
     }
 
     res.status(200).json({
       status: 'success',
       message: 'Profile data updated successfully.',
+      data: user,
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const deleteUserProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user.id;
+
+    let user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (user?.imageUrl) {
+      await unlink(user?.imageUrl);
+    }
+
+    user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        imageUrl: null,
+      },
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Profile image removed successfully.',
       data: user,
     });
   } catch (err: any) {
