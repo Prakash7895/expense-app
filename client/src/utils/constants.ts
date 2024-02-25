@@ -1223,3 +1223,18 @@ export const currencies = [
   { country: 'Sweden', code: 'SEK', symbol: 'kr', countryCode: 'SE' },
   { country: 'Norway', code: 'NOK', symbol: 'kr', countryCode: 'NO' },
 ];
+
+export const months = [
+  { label: 'January', value: '/01/01' },
+  { label: 'February', value: '/02/01' },
+  { label: 'March', value: '/03/01' },
+  { label: 'April', value: '/04/01' },
+  { label: 'May', value: '/05/01' },
+  { label: 'June', value: '/06/01' },
+  { label: 'July', value: '/07/01' },
+  { label: 'August', value: '/08/01' },
+  { label: 'September', value: '/09/01' },
+  { label: 'October', value: '/10/01' },
+  { label: 'November', value: '/11/01' },
+  { label: 'December', value: '/12/01' },
+];

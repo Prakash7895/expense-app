@@ -6,14 +6,16 @@ import {
   requiredCheck,
   validateResult,
 } from '../utils';
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 import {
   addTransaction,
   deleteTransaction,
   getBalanceInfo,
+  getStats,
   listTransactions,
   updateTransaction,
 } from '../controller/transaction';
+import { DateTime } from 'luxon';
 
 const transactionRouter = express.Router();
 
@@ -344,5 +346,95 @@ transactionRouter.delete(
  *        description: Created
  */
 transactionRouter.get('/balance-info', authCheck(), getBalanceInfo);
+
+/**
+ * @openapi
+ * '/api/transaction/stats':
+ *  get:
+ *     tags:
+ *     - Transaction Controller
+ *     summary: Transaction Stats
+ *     parameters:
+ *      - name: startDate
+ *        in: query
+ *        required: true
+ *        type: string
+ *        format: date
+ *      - name: endDate
+ *        in: query
+ *        required: true
+ *        type: string
+ *        format: date
+ *      - name: accountId
+ *        in: query
+ *      - name: type
+ *        in: query
+ *        schema:
+ *          type: string
+ *          enum: [debit, credit]
+ *        description: >
+ *          Sort order:
+ *           * `debit` - Get all debit transactions
+ *           * `credit` - Get all credit transactions
+ *     responses:
+ *      201:
+ *        description: Created
+ */
+transactionRouter.get(
+  '/stats',
+  authCheck(),
+  [
+    query('startDate')
+      .trim()
+      .notEmpty()
+      .withMessage('Start date is required.')
+      .isDate({ format: 'YYYY-MM-DD' })
+      .customSanitizer((val) => {
+        const start = DateTime.fromJSDate(new Date(val)).startOf('day').toISO();
+        return start;
+      }),
+    query('endDate')
+      .trim()
+      .notEmpty()
+      .withMessage('Start date is required.')
+      .isDate({ format: 'YYYY-MM-DD' })
+      .customSanitizer((val) => {
+        const end = DateTime.fromJSDate(new Date(val)).endOf('day').toISO();
+        return end;
+      })
+      .custom((val, { req }) => {
+        const startDate = new Date(req.query?.startDate);
+        const endDate = new Date(val);
+
+        if (endDate < startDate) {
+          throw new Error('End date should be greater than start date.');
+        }
+        return true;
+      }),
+    query('accountId')
+      .custom(async (val, { req }) => {
+        if (val) {
+          const accountExists = await prisma.account.findFirst({
+            where: {
+              id: val,
+              userId: req.user.id,
+            },
+          });
+          if (!accountExists) {
+            throw new Error('Not a valid Account Id.');
+          }
+        }
+        return true;
+      })
+      .optional(),
+    query('type')
+      .optional()
+      .trim()
+      .isIn(['credit', 'debit'])
+      .withMessage('Type can only be "credit" or "debit".'),
+  ],
+  validateResult,
+  getStats
+);
 
 export default transactionRouter;

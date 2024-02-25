@@ -9,14 +9,12 @@ import CrudComponent from '../components/CrudComponent';
 import TransactionCard from '../components/TransactionCard';
 import { AutocompleteItem } from '@nextui-org/react';
 import { DateTime } from 'luxon';
-import { getUser } from '../utils/store/userSlice';
-import { currencies } from '../utils/constants';
+import useCurrency from '../hooks/useCurrency';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
-  const user = useAppSelector(getUser);
 
-  const currency = currencies.find((el) => el.code === user?.currency);
+  const currency = useCurrency();
 
   const { data, refetch } = useQuery<{
     success: boolean;

@@ -5,7 +5,6 @@ import { MdDelete } from 'react-icons/md';
 import userIcon from '../assets/user.svg';
 import { getUser, setUser } from '../utils/store/userSlice';
 import { useAppDispatch, useAppSelector } from '../utils/types';
-import { currencies } from '../utils/constants';
 import DynamicForm from '../components/DynamicForm';
 import {
   currencyFormFields,
@@ -17,6 +16,7 @@ import axiosInstance from '../utils/axiosInstance';
 import { toast } from 'react-toastify';
 import { errorToast } from '../utils';
 import Modal from '../components/Modal';
+import useCurrency from '../hooks/useCurrency';
 
 const Profile = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,9 +47,7 @@ const Profile = () => {
     }
   }, [file, user]);
 
-  const currency = currencies.find(
-    (el) => el.code === (user?.currency ?? 'USD')
-  );
+  const currency = useCurrency();
 
   const fetchUserData = () =>
     axiosInstance

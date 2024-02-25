@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../utils';
+import { TransactionType } from '@prisma/client';
 
 export const addTransaction = async (req: Request, res: Response) => {
   try {
@@ -255,6 +256,58 @@ export const getBalanceInfo = async (req: Request, res: Response) => {
         sumByCategoryCredit,
         sumByCategoryDebit,
       },
+    });
+  } catch (err: any) {
+    res.status(400).json({
+      status: 'error',
+      message: err.message,
+    });
+  }
+};
+
+export const getStats = async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate, accountId, type } = req.query;
+
+    let whereQuery = {
+      userId: req.user.id,
+      date: {
+        gte: startDate as unknown as Date,
+        lte: endDate as unknown as Date,
+      },
+      ...((accountId as string)?.trim()
+        ? { accountId: accountId as string }
+        : {}),
+      ...((type as string)?.trim() ? { type: type as TransactionType } : {}),
+    };
+
+    const sumByCategory = await prisma.transaction
+      .groupBy({
+        by: ['categoryId'],
+        _sum: {
+          amount: true,
+        },
+        where: {
+          ...whereQuery,
+        },
+        orderBy: {
+          _sum: {
+            amount: 'desc',
+          },
+        },
+      })
+      .then((data) => {
+        return data.map((item) => {
+          return {
+            categoryId: item.categoryId,
+            amount: item._sum.amount,
+          };
+        });
+      });
+
+    res.status(200).json({
+      success: true,
+      data: sumByCategory,
     });
   } catch (err: any) {
     res.status(400).json({

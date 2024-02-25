@@ -6,15 +6,15 @@ import { inviteSchema } from '../utils/validations';
 import { useState } from 'react';
 import { errorToast } from '../utils';
 import { toast } from 'react-toastify';
+import PieByCategory from '../components/PieByCategory';
 
 const Home = () => {
-  const [count, setCount] = useState(0);
-  const [visible, setVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const inviteHandler = (t: any) => {
-    console.log('TT,', t);
+  const [visible, setVisible] = useState(false);
+  const [count, setCount] = useState(0);
 
+  const inviteHandler = (t: any) => {
     setIsLoading(true);
     const data = t?.emailOrPhone?.map((el: string, idx: number) => {
       const isPhoneNumber = /^\d+$/.test(el);
@@ -29,8 +29,6 @@ const Home = () => {
         emailOrPhone: el,
       };
     });
-
-    console.log('DATA', data);
 
     if (data?.length) {
       axiosInstance
@@ -57,21 +55,23 @@ const Home = () => {
         name: inviteFormFields.name + `.${idx}`,
       })
     );
-    console.log('ARR', arr);
     return arr;
   };
 
   return (
-    <div>
-      <Button
-        variant='shadow'
-        onClick={() => {
-          setCount(0);
-          setVisible(true);
-        }}
-      >
-        Invite
-      </Button>
+    <div className='mt-4'>
+      {/* <div>
+        <Button
+          variant='shadow'
+          onClick={() => {
+            setCount(0);
+            setVisible(true);
+          }}
+        >
+          Invite
+        </Button>
+      </div> */}
+      <PieByCategory />
 
       {visible && (
         <DynamicForm
