@@ -34,7 +34,7 @@ const Transaction = () => {
     <AutocompleteItem
       key={item.id}
       textValue={`${
-        item.name.trim().length
+        item.name?.trim()?.length
           ? item.name
           : item.firstName
           ? `${item.firstName} ${item.lastName}`
@@ -46,7 +46,7 @@ const Transaction = () => {
       <div className='flex gap-2 items-center'>
         <div className='flex flex-col'>
           <span className='text-small'>{`${
-            item.name.trim().length
+            item.name?.trim()?.length
               ? item.name
               : item.firstName
               ? `${item.firstName} ${item.lastName}`
