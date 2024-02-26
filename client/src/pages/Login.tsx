@@ -8,10 +8,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { useAppDispatch } from '../utils/types';
 import { setUser } from '../utils/store/userSlice';
+import { BsInfoCircleFill } from 'react-icons/bs';
+import { Button, Tooltip } from '@nextui-org/react';
+import { getSettings } from '../utils/store/settingSlice';
+import { useSelector } from 'react-redux';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { mode } = useSelector(getSettings);
 
   const dispatch = useAppDispatch();
 
@@ -52,7 +57,31 @@ const Login = () => {
     <div className='h-screen -mb-6 flex justify-center items-center'>
       <DynamicForm
         hideCloseButton
-        formHeader='Login'
+        formHeader={
+          <div className='flex items-center'>
+            Login
+            <Tooltip
+              classNames={{
+                content: `${mode} text-foreground bg-background`,
+              }}
+              content={
+                <div className='p-3'>
+                  <p>Explore with dummy account.</p>
+                  <p className='text-default-500 text-small'>
+                    Email: prakash_saran@yopmail.com
+                  </p>
+                  <p className='text-default-500 text-small'>
+                    Password: Demo@123
+                  </p>
+                </div>
+              }
+            >
+              <Button isIconOnly className='border-0 bg-transparent'>
+                <BsInfoCircleFill size={15} className='text-default-400' />
+              </Button>
+            </Tooltip>
+          </div>
+        }
         onSubmit={onSubmit}
         fields={loginFormFields}
         submitButtonLabel='Sign In'
