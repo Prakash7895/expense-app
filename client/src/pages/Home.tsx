@@ -3,7 +3,7 @@ import axiosInstance from '../utils/axiosInstance';
 import DynamicForm from '../components/DynamicForm';
 import { addTransaction, inviteFormFields } from '../utils/formFields';
 import { addTransactionSchema, inviteSchema } from '../utils/validations';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { errorToast, getTransactionDescription } from '../utils';
 import { toast } from 'react-toastify';
 import PieByCategory from '../components/PieByCategory';
@@ -20,6 +20,7 @@ import { transactionColumns } from '../utils/columnFields';
 import { DateTime } from 'luxon';
 import { Link } from 'react-router-dom';
 import { FaArrowRight } from 'react-icons/fa';
+import useResize from '../hooks/useResize';
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,7 @@ const Home = () => {
   const [count, setCount] = useState(1);
 
   const currency = useCurrency();
+  const width = useResize();
 
   const inviteHandler = (t: any) => {
     setIsLoading(true);
@@ -165,6 +167,19 @@ const Home = () => {
     </AutocompleteItem>
   );
 
+  useEffect(() => {
+    setCount((p) => p + 1);
+  }, [currency]);
+
+  let columns = transactionColumns.slice(0, transactionColumns.length - 1);
+
+  if (width < 450) {
+    columns.splice(2);
+    columns[0].name = 'Info';
+  } else if (width < 600) {
+    columns.splice(2, 1);
+  }
+
   return (
     <div className='mt-4'>
       <PieByCategory refetch={count} />
@@ -238,7 +253,7 @@ const Home = () => {
         showBottomContent={false}
         queryKey={['transaction']}
         api={'/api/transaction/list'}
-        columns={transactionColumns.slice(0, transactionColumns.length - 1)}
+        columns={columns}
         customTopContent={
           <div className='flex justify-between items-center'>
             <p>Recent Transactions</p>
@@ -269,6 +284,9 @@ const Home = () => {
                 <p className='text-bold text-tiny text-default-400'>
                   {getTransactionDescription(item)}
                 </p>
+                {width < 450 && (
+                  <p>{DateTime.fromISO(item.date).toFormat('DD, t a')}</p>
+                )}
               </div>
             );
           },

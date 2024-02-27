@@ -80,7 +80,6 @@ const CrudComponent: FC<CrudComponentProps> = ({
       : axiosInstance.post(`${crudApi}`, transactionData)
     )
       .then((response) => {
-        console.log(response.data);
         toast.success(response.data?.message);
         setIsOpen(false);
         setRefetchNum((p) => p + 1);

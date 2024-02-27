@@ -11,7 +11,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`max-w-52 shadow-medium bg-background pt-3 z-50 top-0 bottom-0 md:w-1/5 overflow-hidden absolute md:relative transition-all ${
+      className={`max-w-52 shadow-medium bg-background pt-3 z-[250] top-0 bottom-0 md:w-1/5 overflow-hidden absolute md:relative transition-all ${
         showSidebar ? 'w-64' : 'w-0'
       }`}
     >

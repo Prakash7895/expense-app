@@ -119,7 +119,6 @@ const AutoComplete: FC<IAutoCompleteProps> = forwardRef<
         value={value}
         onInputChange={onInputChange}
         onSelectionChange={(key) => {
-          console.log('selectionchange', key);
           onChange({
             target: { value: key },
           });

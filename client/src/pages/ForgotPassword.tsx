@@ -41,7 +41,6 @@ const ForgotPassword = () => {
   ]);
 
   const onSubmit = (t: any, _: any, reset: any) => {
-    console.log('onSubmit', t);
     setIsLoading(true);
     if (!gotOtp) {
       axiosInstance
@@ -50,7 +49,6 @@ const ForgotPassword = () => {
           countryCode: t?.countryCode?.value,
         })
         .then((res) => {
-          console.log('RES', res);
           toast.success(res.data?.message);
           setFormFields(
             forgotPassFormFields(otpDescription)
@@ -75,7 +73,6 @@ const ForgotPassword = () => {
           otp: t?.otp,
         })
         .then((res) => {
-          console.log('RES2222', res);
           toast.success(res.data?.message);
           setFormFields(
             forgotPassFormFields(otpDescription).map((f) => ({
@@ -99,7 +96,6 @@ const ForgotPassword = () => {
           password: t?.password,
         })
         .then((res) => {
-          console.log('RES33333', res);
           reset();
           toast.success(res.data?.message);
           setIsLoading(false);

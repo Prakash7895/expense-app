@@ -60,7 +60,6 @@ const PieByCategory: FC<IPieByCategory> = ({ refetch }) => {
         selectedKeys={[date.startDate]}
         onChange={(e) => {
           const monthStartDate = e.target.value;
-          console.log('monthStartDate', monthStartDate);
           if (monthStartDate) {
             const stDate = DateTime.fromJSDate(new Date(monthStartDate))
               .startOf('month')

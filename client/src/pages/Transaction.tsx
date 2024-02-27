@@ -11,11 +11,13 @@ import { AutocompleteItem } from '@nextui-org/react';
 import { DateTime } from 'luxon';
 import useCurrency from '../hooks/useCurrency';
 import { getTransactionDescription } from '../utils';
+import useResize from '../hooks/useResize';
 
 const Transaction = () => {
   const categories = useAppSelector(getCategory);
 
   const currency = useCurrency();
+  const width = useResize();
 
   const { data, refetch } = useQuery<{
     success: boolean;
@@ -62,8 +64,18 @@ const Transaction = () => {
     </AutocompleteItem>
   );
 
+  let columns = transactionColumns.map((el) => ({ ...el }));
+
+  if (width < 450) {
+    columns.splice(2, 2);
+    columns[0].name = 'Info';
+  } else if (width < 600) {
+    columns.splice(2, 1);
+  }
+
   return (
     <CrudComponent
+      key={currency?.countryCode}
       headerLabel='Transactions'
       headerDescription='Update and explore transactions.'
       headerBtnLabel='Add Transaction'
@@ -71,7 +83,7 @@ const Transaction = () => {
       queryKey={['transaction']}
       crudApi='/api/transaction/'
       formHeader='Add Transaction'
-      tableColumns={transactionColumns}
+      tableColumns={columns}
       defaultSortDescriptor={{
         column: 'date',
         direction: 'descending',
@@ -85,6 +97,9 @@ const Transaction = () => {
               <p className='text-bold text-tiny text-default-400'>
                 {getTransactionDescription(item)}
               </p>
+              {width < 450 && (
+                <p>{DateTime.fromISO(item.date).toFormat('DD, t a')}</p>
+              )}
             </div>
           );
         },

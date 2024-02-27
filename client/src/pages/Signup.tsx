@@ -19,13 +19,11 @@ const Signup = () => {
         ...t,
         countryCode: t.countryCode?.value ?? '',
       })
-      .then((res) => {
-        console.log('RES2:', res);
+      .then(() => {
         toast.success('Registration successfull.');
         setIsLoading(false);
       })
       .catch((err: any) => {
-        console.log('ERR', err);
         toast.error(
           <div>
             {err?.response?.data?.errors?.map((el: any) => (

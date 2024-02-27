@@ -24,7 +24,7 @@ const PrivateRoutes = () => {
         <Sidebar />
         <div
           onClick={() => dispatch(setShowSidebar(!showSidebar))}
-          className={`bg-slate-500 opacity-30 absolute z-40 ${
+          className={`bg-slate-500 opacity-30 absolute z-[200] ${
             showSidebar ? 'top-0 bottom-0 left-0 right-0' : ''
           }`}
         ></div>
